@@ -1,0 +1,14 @@
+$headerHeight: 80px;
+
+
+body {
+    font-family: 'Roboto';
+}
+
+.transition {
+    transition: 0.3s;
+}
+
+:export {
+    headerHeight: $headerHeight;
+}
