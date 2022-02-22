@@ -15,8 +15,13 @@ export default {
   name: "App",
   components: { Header, Login },
   data: () => ({
-    isModalOpen: false,
+    
   }),
+  computed:{
+    isModalOpen(){
+      return this.$store.state.isModalOpen
+    }
+  }
 };
 </script>
 <style lang="scss">

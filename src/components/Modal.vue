@@ -1,7 +1,7 @@
 <template>
   <div class="modal" v-show="modelValue">
     <div class="modal-background" @click.self="turnOffModal">
-      <v-card class="modal-area" rounded="6px" :style="modalSize">
+      <v-card class="modal-area" rounded="6px">
         <v-icon class="x-button" size="14px" @click.prevent="turnOffModal">
           mdi-close
         </v-icon>
@@ -21,14 +21,10 @@ export default {
     modelValue: true,
     title: "Log In",
   }),
-  computed: {
-    modalSize() {
-      return "123";
-    },
-  },
+  computed: {},
   methods: {
     turnOffModal: function () {
-      this.$emit("update:modelValue", false);
+      this.$store.commit("setModalOpen", false);
     },
   },
 };

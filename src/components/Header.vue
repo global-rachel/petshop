@@ -29,7 +29,7 @@
           <v-icon left> mdi-cart </v-icon>
           CART(0)
         </v-btn>
-        <v-btn outlined color="white"> LOGIN </v-btn>
+        <v-btn outlined color="white" @click="login()"> LOGIN </v-btn>
       </div>
     </v-container>
   </v-app-bar>
@@ -45,6 +45,10 @@ export default {
     ],
     height: publicStyles.headerHeight,
   }),
-  mounted() {},
+  methods: {
+    login() {
+      this.$store.commit("setModalOpen", true);
+    },
+  },
 };
 </script>
