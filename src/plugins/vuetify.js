@@ -11,6 +11,7 @@ export default new Vuetify({
             primary: '#4EC690',
             light: '#EDF5F1',
             dark: '#2DB479',
+            info: '#1976D2',
           },
         },
       },
