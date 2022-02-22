@@ -25,11 +25,37 @@
       </div>
 
       <div>
-        <v-btn outlined color="white" class="ma-2">
+        <v-btn outlined color="white" class="ma-2" height="48">
           <v-icon left> mdi-cart </v-icon>
           CART(0)
         </v-btn>
-        <v-btn outlined color="white" @click="login()"> LOGIN </v-btn>
+        <v-btn
+          v-if="!isLogin"
+          outlined
+          color="white"
+          @click="login()"
+          height="48"
+        >
+          LOGIN
+        </v-btn>
+        <v-btn
+          v-if="isLogin"
+          outlined
+          color="white"
+          @click="login()"
+          height="48"
+        >
+          LOGOUT
+        </v-btn>
+        <v-avatar
+          v-if="isLogin"
+          size="48"
+          outlined
+          color="white"
+          class="ml-4 avatar"
+        >
+          <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+        </v-avatar>
       </div>
     </v-container>
   </v-app-bar>
@@ -50,5 +76,15 @@ export default {
       this.$store.commit("setModalOpen", true);
     },
   },
+  computed: {
+    isLogin() {
+      return this.$store.state.token && this.$store.state.token !== null;
+    },
+  },
 };
 </script>
+<style lang="scss">
+.avatar {
+  border: 1px solid;
+}
+</style>

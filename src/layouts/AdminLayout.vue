@@ -6,7 +6,7 @@
       width="260"
       class="navigation-wrapper"
     >
-      <v-list subheader="false">
+      <v-list>
         <v-hover
           v-for="{ name, icon } in links"
           :key="icon"
@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import publicStyles from "@/assets/styles/common.scss";
 export default {
   data: () => ({
     links: [
@@ -46,9 +45,6 @@ export default {
       { name: "Products", icon: "mdi-folder-outline" },
     ],
   }),
-  mounted() {
-    console.log(publicStyles);
-  },
 };
 </script>
 <style lang="scss">

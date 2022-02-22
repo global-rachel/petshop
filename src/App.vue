@@ -2,9 +2,7 @@
   <v-app id="inspire">
     <Header />
     <router-view />
-    <Teleport to="body">
-      <Login v-if="isModalOpen" />
-    </Teleport>
+    <Login v-if="isModalOpen" />
   </v-app>
 </template>
 
@@ -14,14 +12,12 @@ import Login from "@/pages/Login.vue";
 export default {
   name: "App",
   components: { Header, Login },
-  data: () => ({
-    
-  }),
-  computed:{
-    isModalOpen(){
-      return this.$store.state.isModalOpen
-    }
-  }
+  data: () => ({}),
+  computed: {
+    isModalOpen() {
+      return this.$store.state.isModalOpen;
+    },
+  },
 };
 </script>
 <style lang="scss">
