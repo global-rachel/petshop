@@ -1,9 +1,10 @@
 <template>
   <div>
     <v-navigation-drawer
-      absolute
+      fixed
+      permanent
       color="light"
-      width="260"
+      :width="sideNavWidth"
       class="navigation-wrapper"
     >
       <v-list>
@@ -30,13 +31,17 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main> </v-main>
+    <v-main>
+      <div class="main-wrapper"><router-view /></div>
+    </v-main>
   </div>
 </template>
 
 <script>
+import publicStyles from "@/assets/styles/common.scss";
 export default {
   data: () => ({
+    sideNavWidth: publicStyles.sideNavWidth,
     links: [
       { name: "Dashboard", icon: "mdi-tune" },
       { name: "All Tickets", icon: "mdi-subtitles" },
@@ -47,10 +52,14 @@ export default {
   }),
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/styles/common.scss";
 
 .navigation-wrapper {
   padding-top: $headerHeight;
+}
+
+.main-wrapper {
+  padding: 24px 40px 24px calc(40px + #{$sideNavWidth});
 }
 </style>

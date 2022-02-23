@@ -12,6 +12,7 @@ export default new Vuetify({
             light: '#EDF5F1',
             dark: '#2DB479',
             info: '#1976D2',
+            mainInfo: "#2196F3",
           },
         },
       },

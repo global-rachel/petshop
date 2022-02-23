@@ -1,5 +1,12 @@
 <template>
-  <v-app-bar app color="primary" flat :height="height">
+  <v-app-bar
+    app
+    color="primary"
+    flat
+    :height="height"
+    class="header"
+    :z-index="999"
+  >
     <v-container
       class="py-0 fill-height d-flex justify-space-between"
       color="primary"
@@ -75,9 +82,9 @@ export default {
     login() {
       this.$store.commit("setModalOpen", true);
     },
-    logout(){
-      this.$store.dispatch('logout')
-    }
+    logout() {
+      this.$store.dispatch("logout");
+    },
   },
   computed: {
     isLogin() {
@@ -86,8 +93,12 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .avatar {
   border: 1px solid;
+}
+
+.header {
+  z-index: 999 !important;
 }
 </style>
