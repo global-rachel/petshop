@@ -42,7 +42,7 @@
           v-if="isLogin"
           outlined
           color="white"
-          @click="login()"
+          @click="logout()"
           height="48"
         >
           LOGOUT
@@ -75,6 +75,9 @@ export default {
     login() {
       this.$store.commit("setModalOpen", true);
     },
+    logout(){
+      this.$store.dispatch('logout')
+    }
   },
   computed: {
     isLogin() {

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
@@ -36,8 +37,20 @@ export default new Vuex.Store({
         }
         )
       })
+    },
+    logout:(context)=>{
+      return new Promise((resolve,reject)=>{
+        axios.get(`${API_HOST}${PAGE_ADMIN}/logout`).then(()=>{
+          context.commit('setToken', null);
+          resolve();
+        }).catch(error=>{
+          console.log(error)
+          reject(error.response.data.error)
+        })
+      })
     }
   },
   modules: {
-  }
+  },
+  plugins: [createPersistedState({ storage: window.sessionStorage })]
 })
