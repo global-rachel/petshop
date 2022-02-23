@@ -13,15 +13,15 @@
         <v-toolbar flat>
           <div>All Customers</div>
           <v-spacer></v-spacer>
-          <a href="#" class="filter-icon mx-7"
-            >Filter <v-icon class="ml-5"> mdi-chevron-down </v-icon></a
-          >
-          <v-divider class="mx-4" inset vertical></v-divider>
 
           <v-btn color="primary" dark class="mr-3" v-bind="attrs" v-on="on">
             <v-icon class="x-button" size="14px"> mdi-plus </v-icon>
             Add New Customers
           </v-btn>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <a href="#" class="filter-icon mx-7"
+            >Filter <v-icon class="ml-5"> mdi-chevron-down </v-icon></a
+          >
         </v-toolbar>
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
@@ -92,17 +92,17 @@
       </template>
       <!-- Customized Columns -->
       <!-- Name -->
-      <template v-slot:item.name="{ item }">
+      <template v-slot:item.first_name="{ item }">
         <v-avatar size="44" color="white" class="my-5 mr-6">
-          <img :src="item.name.src" alt="John" />
+          <img :src="item.avatar" alt="John" />
         </v-avatar>
-        {{ item.name.text }}
+        {{ item.name }}
       </template>
 
       <!-- Marketing Preference -->
-      <template v-slot:item.mkt_preference="{ item }">
-        <v-chip :color="getColor(item.mkt_preference)" dark>
-          {{ item.mkt_preference }}
+      <template v-slot:item.is_marketing="{ item }">
+        <v-chip :color="getColor(item.is_marketing)" dark>
+          {{ getMktText(item.is_marketing) }}
         </v-chip>
       </template>
 
@@ -146,15 +146,15 @@ export default {
         text: "Name",
         align: "start",
         sortable: false,
-        value: "name",
+        value: "first_name",
       },
       { text: "Email", value: "email", sortable: false },
-      { text: "Phone", value: "phone", sortable: false },
+      { text: "Phone", value: "phone_number", sortable: false },
       { text: "Address", value: "address", sortable: false },
-      { text: "Date Created", value: "date_created", sortable: false },
+      { text: "Date Created", value: "created_at", sortable: false },
       {
         text: "Marketing Preferences",
-        value: "mkt_preference",
+        value: "is_marketing",
         sortable: false,
       },
       { text: "", value: "actions", sortable: false },
@@ -191,31 +191,46 @@ export default {
       val || this.closeDelete();
     },
   },
-
-  created() {
-    this.initialize();
-  },
-
   methods: {
     initialize() {
       this.desserts = [
         {
-          name: {
-            text: "John",
-            src: "https://cdn.vuetifyjs.com/images/john.jpg",
-          },
-          email: 159,
-          phone: 6.0,
-          address: 24,
-          date_created: 4.0,
-          mkt_preference: "yes",
+          address: "509 Leonor Common, West Karinaberg, AL",
+          avatar: null,
+          created_at: "2022-02-23T05:30:52.000000Z",
+          email: "joenas@gmail.com",
+          email_verified_at: null,
+          first_name: "Joe",
+          is_marketing: 0,
+          last_login_at: "2022-02-23 11:11:24",
+          last_name: "Nas",
+          phone_number: "(218) 388-7126",
+          updated_at: "2022-02-23T11:11:24.000000Z",
+          uuid: "80df51a7-b8d1-460d-9edf-95516248c0f7",
+        },
+        {
+          address: "509 Leonor Common, West Karinaberg, AL",
+          avatar: null,
+          created_at: "2022-02-23T05:30:52.000000Z",
+          email: "joenas@gmail.com",
+          email_verified_at: null,
+          first_name: "Joe",
+          is_marketing: 1,
+          last_login_at: "2022-02-23 11:11:24",
+          last_name: "Nas",
+          phone_number: "(218) 388-7126",
+          updated_at: "2022-02-23T11:11:24.000000Z",
+          uuid: "80df51a7-b8d1-460d-9edf-95516248c0f7",
         },
       ];
     },
-    getColor(calories) {
-      if (calories > 400) return "red";
-      else if (calories > 200) return "orange";
-      else return "green";
+    getColor(value) {
+      if (value) return "primary";
+      else return "orange";
+    },
+    getMktText(value) {
+      if (value) return "Yes";
+      else return "No";
     },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
@@ -258,6 +273,11 @@ export default {
       }
       this.close();
     },
+  },
+  async created() {
+    // const res = await this.$store.dispatch("getAllUsersAPI");
+    // console.log(res);
+    this.initialize();
   },
 };
 </script>

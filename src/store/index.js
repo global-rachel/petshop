@@ -48,6 +48,20 @@ export default new Vuex.Store({
           reject(error.response.data.error)
         })
       })
+    },
+    getAllUsersAPI: (context)=>{
+      return new Promise((resolve,reject)=>{
+        axios.get(`${API_HOST}${PAGE_ADMIN}/user-listing`,{
+          headers:{
+            Authorization: `${context.state.token}`
+          }
+        }).then(()=>{
+          resolve();
+        }).catch(error=>{
+          console.log(error)
+          reject(error.response.data.error)
+        })
+      })
     }
   },
   modules: {
