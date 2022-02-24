@@ -17,8 +17,8 @@ const routes = [
     meta: {requiresAuth: true},
     children:[
       {
-        path: 'customer',
-        name:'Customer',
+        path: 'customers',
+        name:'Customers',
         component: ()=>import('../pages/Admin/Customer.vue')
       }
     ]

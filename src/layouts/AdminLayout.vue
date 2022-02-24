@@ -18,11 +18,13 @@
         >
           <v-list-item
             class="transition"
-            :class="hover ? 'dark white--text' : ''"
+            :class="hover || isCurrentPage(name) ? 'dark white--text' : ''"
             link
           >
             <v-list-item-icon>
-              <v-icon :color="hover ? 'white' : ''">{{ icon }}</v-icon>
+              <v-icon :color="hover || isCurrentPage(name) ? 'white' : ''">{{
+                icon
+              }}</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -52,6 +54,11 @@ export default {
       { name: "Products", icon: "mdi-folder-outline" },
     ],
   }),
+  methods: {
+    isCurrentPage(name) {
+      return this.$route.name == name;
+    },
+  },
   computed: {
     isSideMenuOpen() {
       return !this.$isMobile() || this.$store.state.isSideMenuOpen;
