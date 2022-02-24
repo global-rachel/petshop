@@ -10,7 +10,7 @@ const PAGE_ADMIN = 'admin'
 
 export default new Vuex.Store({
   state: {
-    token: null,
+    token:  null,
     isModalOpen: false,
     isSideMenuOpen: false,
   },
@@ -27,10 +27,8 @@ export default new Vuex.Store({
     }
   },
   getters:{
-    
   },
-  actions: {
-    
+  actions: {    
     login: (context, {email, password})=>{
       return new Promise((resolve, reject)=>{
         axios.post(`${API_HOST}${PAGE_ADMIN}/login`,{
@@ -77,3 +75,4 @@ export default new Vuex.Store({
   },
   plugins: [createPersistedState({ storage: window.sessionStorage })]
 })
+
