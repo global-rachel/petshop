@@ -11,6 +11,10 @@
       class="py-0 fill-height d-flex justify-space-between"
       color="primary"
     >
+      <v-app-bar-nav-icon
+        v-if="$isMobile()"
+        @click="openSideMenu()"
+      ></v-app-bar-nav-icon>
       <div>
         <img
           src="../assets/images/logo.svg"
@@ -79,6 +83,9 @@ export default {
     height: publicStyles.headerHeight,
   }),
   methods: {
+    openSideMenu() {
+      this.$store.commit("toggleSideMenu");
+    },
     login() {
       this.$store.commit("setModalOpen", true);
     },

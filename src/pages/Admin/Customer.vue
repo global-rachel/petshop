@@ -4,7 +4,7 @@
     <v-divider class="my-6"></v-divider>
     <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="formatedData"
       sort-by="calories"
       class="table"
     >
@@ -92,11 +92,28 @@
       </template>
       <!-- Customized Columns -->
       <!-- Name -->
-      <template v-slot:item.first_name="{ item }">
-        <v-avatar size="44" color="white" class="my-5 mr-6">
+      <template v-slot:item.name="{ item }">
+        <v-avatar v-if="item.avatar" size="44" color="white" class="my-5 mr-6">
           <img :src="item.avatar" alt="John" />
         </v-avatar>
+        <v-btn
+          v-if="!item.avatar"
+          small
+          fab
+          color="primary"
+          elevation="0"
+          class="my-5 mr-6"
+        >
+          <span class="white--text" style="font-size: 20px">
+            {{ item.name[0] }}
+          </span>
+        </v-btn>
         {{ item.name }}
+      </template>
+      <!-- Date -->
+      <template v-slot:item.created_at="{ item }">
+        {{ item.created_at_date }} <br />
+        <span class="small-text">{{ item.created_at_time }}</span>
       </template>
 
       <!-- Marketing Preference -->
@@ -146,7 +163,7 @@ export default {
         text: "Name",
         align: "start",
         sortable: false,
-        value: "first_name",
+        value: "name",
       },
       { text: "Email", value: "email", sortable: false },
       { text: "Phone", value: "phone_number", sortable: false },
@@ -180,6 +197,21 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+    formatedData() {
+      return this.desserts.map((item) => {
+        return {
+          address: item.address,
+          avatar: item.avatar,
+          created_at_date: this.$getGeneralDate(item.created_at),
+          created_at_time: this.$toLocaleTimeString(item.created_at),
+          email: item.email,
+          name: `${item.first_name} ${item.last_name}`,
+          is_marketing: item.is_marketing,
+          last_name: item.last_name,
+          phone_number: item.phone_number,
+        };
+      });
     },
   },
 
@@ -275,22 +307,30 @@ export default {
     },
   },
   async created() {
-    // const res = await this.$store.dispatch("getAllUsersAPI");
-    // console.log(res);
+    const res = await this.$store.dispatch("getAllUsersAPI");
+    console.log(res);
     this.initialize();
   },
 };
 </script>
 <style lang="scss" scoped>
+$secondary-black: rgba(0, 0, 0, 0.87);
+$tertiary-black: rgba(0, 0, 0, 0.54);
+
 .table {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
+  color: $secondary-black;
 
   .filter-icon {
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.54);
+    color: $tertiary-black;
+  }
+
+  .small-text {
+    font-size: 12px;
+    color: $tertiary-black;
   }
 }
 </style>

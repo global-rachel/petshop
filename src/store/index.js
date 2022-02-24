@@ -12,6 +12,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     isModalOpen: false,
+    isSideMenuOpen: false,
   },
   mutations: {
     setToken: (state, payload)=>{
@@ -19,9 +20,17 @@ export default new Vuex.Store({
     },
     setModalOpen: (state, payload)=>{
       state.isModalOpen = payload
+    },
+    toggleSideMenu: (state)=>{
+      state.isSideMenuOpen = !state.isSideMenuOpen
+
     }
   },
+  getters:{
+    
+  },
   actions: {
+    
     login: (context, {email, password})=>{
       return new Promise((resolve, reject)=>{
         axios.post(`${API_HOST}${PAGE_ADMIN}/login`,{

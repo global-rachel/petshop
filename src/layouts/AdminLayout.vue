@@ -1,8 +1,10 @@
 <template>
   <div>
     <v-navigation-drawer
+      v-model="isSideMenuOpen"
       fixed
-      permanent
+      :temporary="$isMobile()"
+      :permanent="!$isMobile()"
       color="light"
       :width="sideNavWidth"
       class="navigation-wrapper"
@@ -50,6 +52,11 @@ export default {
       { name: "Products", icon: "mdi-folder-outline" },
     ],
   }),
+  computed: {
+    isSideMenuOpen() {
+      return !this.$isMobile() || this.$store.state.isSideMenuOpen;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
