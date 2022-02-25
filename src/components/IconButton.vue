@@ -7,9 +7,11 @@
     :class="classString"
     :color="color"
     :style="btnStyle"
+    :width="width"
+    :height="height"
     @click="btnClick()"
   >
-    <v-icon> {{ icon }} </v-icon></v-btn
+    <v-icon :size="iconSize"> {{ icon }} </v-icon></v-btn
   >
 </template>
 <script>
@@ -20,6 +22,9 @@ export default {
     color: { type: String },
     classString: { type: String },
     btnStyle: { type: String },
+    width: { type: String },
+    height: { type: String },
+    iconSize: { type: String },
   },
   methods: {
     btnClick() {

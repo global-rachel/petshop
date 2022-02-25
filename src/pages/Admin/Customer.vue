@@ -113,7 +113,10 @@
         </v-row>
 
         <!-- Pop up -->
-        <v-dialog v-model="dialog" max-width="500px">
+        <EditCustomer v-if="dialog" />
+
+        <!-- v-model="dialog" -->
+        <v-dialog max-width="500px">
           <v-card>
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
@@ -159,23 +162,6 @@
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
               <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5"
-              >Are you sure you want to delete this item?</v-card-title
-            >
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete"
-                >Cancel</v-btn
-              >
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                >OK</v-btn
-              >
-              <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -266,8 +252,9 @@
 <script>
 import AdminTitle from "@/components/Admin/AdminTitle.vue";
 import IconButton from "@/components/IconButton.vue";
+import EditCustomer from "@/components/Admin/EditCustomer.vue";
 export default {
-  components: { AdminTitle, IconButton },
+  components: { AdminTitle, IconButton, EditCustomer },
   data: () => ({
     breadcrumbItems: [
       {
@@ -289,8 +276,7 @@ export default {
       address: "",
     },
     isFilterOpen: false,
-    dialog: false,
-    dialogDelete: false,
+    dialog: true,
     headers: [
       {
         text: "Name",
@@ -301,13 +287,23 @@ export default {
       { text: "Email", value: "email", sortable: false },
       { text: "Phone", value: "phone_number", sortable: false },
       { text: "Address", value: "address", sortable: false },
-      { text: "Date Created", value: "created_at", sortable: false },
+      {
+        text: "Date Created",
+        value: "created_at",
+        sortable: false,
+      },
       {
         text: "Marketing Preferences",
         value: "is_marketing",
         sortable: false,
       },
-      { text: "", value: "actions", sortable: false },
+      {
+        text: "",
+        align: "end",
+        value: "actions",
+        sortable: false,
+        width: "240px",
+      },
     ],
     desserts: [],
     editedIndex: -1,
@@ -405,7 +401,7 @@ export default {
       console.log("edit" + item);
       // this.editedIndex = this.desserts.indexOf(item);
       // this.editedItem = Object.assign({}, item);
-      // this.dialog = true;
+      this.dialog = true;
     },
 
     deleteItem(item) {

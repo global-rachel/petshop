@@ -1,7 +1,8 @@
 <template>
   <div class="modal" v-show="modelValue">
     <div class="modal-background" @click.self="turnOffModal">
-      <v-card class="modal-area" rounded="6px">
+      <v-card class="modal-area" rounded="6px" :style="modalStyle">
+        <h5 class="text-h5">Edit Customer</h5>
         <v-icon class="x-button" size="14px" @click.prevent="turnOffModal">
           mdi-close
         </v-icon>
@@ -14,7 +15,7 @@
 </template>
 <script>
 export default {
-  props: [],
+  props: { modalStyle: { type: String } },
   data: () => ({
     isSuccess: false,
     isLoading: false,
@@ -53,8 +54,9 @@ export default {
   min-height: 600px;
   margin: 5% auto;
   position: relative;
-  padding: 50px 73px;
   border-radius: 6px !important;
+  max-height: calc(100vh - 10%);
+  overflow: scroll;
 
   .x-button {
     position: absolute;

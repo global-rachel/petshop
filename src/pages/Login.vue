@@ -1,5 +1,5 @@
 <template>
-  <Modal>
+  <Modal :modalStyle="'padding: 50px 73px;'">
     <template v-slot:modal-content>
       <div class="w-100 d-flex flex-column align-center">
         <Logo />
