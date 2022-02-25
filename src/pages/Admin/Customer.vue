@@ -125,11 +125,44 @@
 
       <!-- Setting -->
       <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
-          mdi-dots-vertical
-        </v-icon>
-        <!-- <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon> -->
+        <IconButton
+          v-if="item.isShowIcon && !item.isShowDelete"
+          @btnClick="editItem(item)"
+          class="mr-4"
+          :color="'white'"
+          :icon="'mdi-pencil'"
+        />
+        <IconButton
+          v-if="item.isShowDelete && item.isShowIcon"
+          @btnClick="editItem(item)"
+          class="mr-4"
+          :color="'white'"
+          :classString="'success--text'"
+          :icon="'mdi-check'"
+        />
+        <IconButton
+          v-if="item.isShowDelete && item.isShowIcon"
+          @btnClick="editItem(item)"
+          class="mr-4"
+          :classString="'red--text'"
+          :color="'white'"
+          :icon="'mdi-window-close'"
+        />
+        <IconButton
+          v-if="item.isShowIcon"
+          @btnClick="() => (item.isShowDelete = true)"
+          :color="'white'"
+          class="mr-4"
+          :icon="'mdi-delete'"
+          :btnStyle="
+            item.isShowDelete ? 'border: 2px solid #4EC690!important' : ''
+          "
+        />
+        <IconButton
+          @btnClick="handleIconClick(item)"
+          :icon="'mdi-dots-vertical'"
+          :color="item.isShowIcon ? 'primary' : ''"
+        />
       </template>
 
       <!-- No Data -->
@@ -141,8 +174,9 @@
 </template>
 <script>
 import AdminTitle from "@/components/Admin/AdminTitle.vue";
+import IconButton from "@/components/IconButton.vue";
 export default {
-  components: { AdminTitle },
+  components: { AdminTitle, IconButton },
   data: () => ({
     breadcrumbItems: [
       {
@@ -193,7 +227,6 @@ export default {
       protein: 0,
     },
   }),
-
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
@@ -210,11 +243,12 @@ export default {
           is_marketing: item.is_marketing,
           last_name: item.last_name,
           phone_number: item.phone_number,
+          isShowIcon: false,
+          isShowDelete: false,
         };
       });
     },
   },
-
   watch: {
     dialog(val) {
       val || this.close();
@@ -256,6 +290,10 @@ export default {
         },
       ];
     },
+    handleIconClick(item) {
+      item.isShowIcon = !item.isShowIcon;
+      item.isShowDelete = false;
+    },
     getColor(value) {
       if (value) return "primary";
       else return "orange";
@@ -265,9 +303,10 @@ export default {
       else return "No";
     },
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      console.log("edit" + item);
+      // this.editedIndex = this.desserts.indexOf(item);
+      // this.editedItem = Object.assign({}, item);
+      // this.dialog = true;
     },
 
     deleteItem(item) {
@@ -307,13 +346,14 @@ export default {
     },
   },
   async created() {
-    const res = await this.$store.dispatch("getAllUsersAPI");
-    console.log(res);
+    // const res = await this.$store.dispatch("getAllUsersAPI");
+    // console.log(res);
     this.initialize();
   },
 };
 </script>
 <style lang="scss" scoped>
+@import "@/assets/styles/common";
 $secondary-black: rgba(0, 0, 0, 0.87);
 $tertiary-black: rgba(0, 0, 0, 0.54);
 
@@ -332,5 +372,9 @@ $tertiary-black: rgba(0, 0, 0, 0.54);
     font-size: 12px;
     color: $tertiary-black;
   }
+}
+
+::v-deep tr:hover {
+  background: $lightGreen !important;
 }
 </style>

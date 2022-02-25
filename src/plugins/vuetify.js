@@ -13,6 +13,7 @@ export default new Vuetify({
             dark: '#2DB479',
             info: '#1976D2',
             mainInfo: "#2196F3",
+            success:'#4CAF50',
           },
         },
       },
