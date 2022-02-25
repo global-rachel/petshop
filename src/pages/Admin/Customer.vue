@@ -2,15 +2,10 @@
   <div>
     <AdminTitle :items="breadcrumbItems" />
     <v-divider class="my-6"></v-divider>
-    <v-data-table
-      :headers="headers"
-      :items="formatedData"
-      sort-by="calories"
-      class="table"
-    >
+    <v-data-table :headers="headers" :items="formatedData" class="table">
+      <!-- Table Top -->
       <template v-slot:top>
-        <!-- Top Left -->
-        <v-toolbar flat>
+        <v-toolbar flat style="position: relative">
           <div>All Customers</div>
           <v-spacer></v-spacer>
 
@@ -19,10 +14,105 @@
             Add New Customers
           </v-btn>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <a href="#" class="filter-icon mx-7"
-            >Filter <v-icon class="ml-5"> mdi-chevron-down </v-icon></a
+          <a
+            href="#"
+            class="filter-icon mx-7"
+            @click="() => (isFilterOpen = !isFilterOpen)"
+            >Filter
+            <v-icon class="ml-5">
+              {{ isFilterOpen ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon
+            ></a
           >
         </v-toolbar>
+        <!--  Filter Area -->
+        <v-row
+          transition="scroll-y-transition"
+          v-if="isFilterOpen"
+          class="elevation-1"
+          style="background: white; width: 100%; top: 100%; left: 0%"
+        >
+          <v-col cols="12">
+            <v-divider></v-divider>
+          </v-col>
+          <v-col cols="4" v-for="filter in filterInputeText" :key="filter">
+            <v-text-field
+              v-model="filterValue[filter]"
+              append-icon="mdi-magnify"
+              :label="`Customer ${$capitalizeString(filter)}`"
+              single-line
+              hide-details
+              outlined
+              dense
+              color="rgba(0, 0, 0, 0.54)"
+            />
+          </v-col>
+          <!-- Date Picker & Dropdown-->
+          <v-col cols="4 d-flex">
+            <v-menu class="w-50">
+              <v-date-picker v-model="date" no-title scrollable>
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="menu = false">
+                  Cancel
+                </v-btn>
+                <v-btn text color="primary" @click="$refs.menu.save(date)">
+                  OK
+                </v-btn>
+              </v-date-picker>
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  width="40px"
+                  dense
+                  v-model="date"
+                  label="Picker in menu"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                  class="dateInput relative"
+                  outlined
+                ></v-text-field>
+              </template>
+            </v-menu>
+
+            <!-- Dropdown -->
+            <div class="text-center ml-3 w-50">
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    width="100%"
+                    v-bind="attrs"
+                    v-on="on"
+                    outlined
+                    class="filterDropdown"
+                    height="40"
+                    >Marketing Preference
+                    <v-icon class="ml-3"> mdi-menu-down </v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item v-for="(item, index) in items" :key="index">
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </v-col>
+          <v-col>
+            <v-btn
+              color="primary"
+              class="mr-3"
+              v-bind="attrs"
+              v-on="on"
+              depressed
+              disabled
+              height="40"
+            >
+              Reset
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <!-- Pop up -->
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
@@ -90,6 +180,7 @@
           </v-card>
         </v-dialog>
       </template>
+
       <!-- Customized Columns -->
       <!-- Name -->
       <template v-slot:item.name="{ item }">
@@ -190,6 +281,14 @@ export default {
         href: "",
       },
     ],
+    filterInputeText: ["name", "email", "phone", "address"],
+    filterValue: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+    },
+    isFilterOpen: false,
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -356,6 +455,7 @@ export default {
 @import "@/assets/styles/common";
 $secondary-black: rgba(0, 0, 0, 0.87);
 $tertiary-black: rgba(0, 0, 0, 0.54);
+$fourth-black: rgba(0, 0, 0, 0.23);
 
 .table {
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -376,5 +476,44 @@ $tertiary-black: rgba(0, 0, 0, 0.54);
 
 ::v-deep tr:hover {
   background: $lightGreen !important;
+}
+
+// ::v-deep .v-btn {
+//   position: inherit;
+// }
+
+// ::v-deep .v-chip {
+//   position: inherit;
+// }
+
+::v-deep .row {
+  margin: 0px;
+}
+
+::v-deep .v-input__prepend-outer {
+  position: absolute;
+  right: 0;
+}
+
+::v-deep button {
+  text-transform: initial;
+}
+
+.filterDropdown {
+  border: 1px solid $tertiary-black;
+  padding: 0 12px !important;
+
+  ::v-deep span {
+    width: 100%;
+    white-space: pre-wrap;
+    text-align: left;
+  }
+
+  ::v-deep .v-btn__content {
+    color: $tertiary-black;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
 }
 </style>

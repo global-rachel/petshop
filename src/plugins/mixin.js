@@ -29,6 +29,9 @@ export const mixin = {
               document.documentElement.clientWidth ||
               document.body.clientWidth
             return width <= 576
-        }
+        },
+        $capitalizeString(string){
+            return string[0].toUpperCase() + string.slice(1)
+        },
     },
 }
