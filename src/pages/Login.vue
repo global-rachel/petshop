@@ -72,6 +72,7 @@ export default {
         });
 
         this.$store.commit("setModalOpen", false);
+        window.location.reload();
       } catch (error) {
         this.snackbar = true;
         this.msg = error;

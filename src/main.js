@@ -10,13 +10,14 @@ import axios from 'axios'
 axios.interceptors.response.use(
   response => {
     console.log(response)    
+    return response
   },
   (error) => {
     if (error.response.status === 401) {
       router.push('/')
       store.commit('setModalOpen', true)
     }
-    return 
+     return error
   }
 )
 

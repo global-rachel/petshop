@@ -36,11 +36,11 @@ export default new Vuex.Store({
           password
         }).then(res=>{
           context.commit('setToken', res.data.data.token);
-          resolve(res.data);
+          resolve(res);
          }
         ).catch(error=>{
           console.log(error)
-          reject(error.response.data.error)
+          reject(error)
         }
         )
       })
@@ -49,6 +49,7 @@ export default new Vuex.Store({
       return new Promise((resolve,reject)=>{
         axios.get(`${API_HOST}${PAGE_ADMIN}/logout`).then(()=>{
           context.commit('setToken', null);
+          window.location.reload()
           resolve();
         }).catch(error=>{
           console.log(error)
