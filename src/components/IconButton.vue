@@ -22,9 +22,9 @@ export default {
     color: { type: String },
     classString: { type: String },
     btnStyle: { type: String },
-    width: { type: String },
-    height: { type: String },
-    iconSize: { type: String },
+    width: { type: Number },
+    height: { type: Number },
+    iconSize: { type: Number },
   },
   methods: {
     btnClick() {

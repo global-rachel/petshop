@@ -127,6 +127,7 @@
         <EditCustomer
           v-if="isAddCustomer"
           @closeModal="isAddCustomer = false"
+          @modalBtnClick="sendEditUserAPI"
           :title="'Add Customer'"
           :btnText="'Add New Customer'"
         />
@@ -397,6 +398,19 @@ export default {
           uuid: "80df51a7-b8d1-460d-9edf-95516248c0f7",
         },
       ];
+    },
+    async sendEditUserAPI(payload) {
+      console.log(payload);
+
+      try {
+        await this.$store.dispatch("createUserAPI", payload);
+        this.isAddCustomer = false;
+        //TODO: reload of data renewed
+      } catch (error) {
+        // TODO:
+        // this.snackbar = true;
+        this.msg = error;
+      }
     },
     handleIconClick(item) {
       item.isShowIcon = !item.isShowIcon;

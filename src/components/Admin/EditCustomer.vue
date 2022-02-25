@@ -20,7 +20,7 @@
         <!-- Name -->
         <div class="d-flex">
           <v-text-field
-            v-model="form.email"
+            v-model="form.first_name"
             class="mr-5"
             ref="first_name"
             :rules="[rules.password]"
@@ -32,7 +32,7 @@
           />
 
           <v-text-field
-            v-model="form.email"
+            v-model="form.last_name"
             ref="last_name"
             :rules="[rules.password]"
             outlined
@@ -52,8 +52,12 @@
           rows="1"
           row-height="15"
         />
-        <v-text-field outlined label="Append"></v-text-field>
-        <v-text-field outlined label="Append">
+        <v-text-field
+          outlined
+          label="Phone"
+          v-model="form.phone_number"
+        ></v-text-field>
+        <v-text-field outlined label="Address" v-model="form.address">
           <template v-slot:append>
             <div>
               <svg
@@ -86,7 +90,7 @@
           append-icon="mdi-eye"
         ></v-text-field>
         <v-text-field
-          v-model="form.password"
+          v-model="form.password_confirmation"
           ref="password"
           :rules="[rules.password]"
           filled
@@ -98,7 +102,7 @@
           row-height="15"
           append-icon="mdi-eye"
         ></v-text-field>
-        <v-btn class="mt-9 btn" color="primary" block @click="login()">
+        <v-btn class="mt-9 btn" color="primary" block @click="modalBtnClick()">
           {{ btnText }}
         </v-btn>
       </v-form>
@@ -118,7 +122,7 @@
 import Modal from "@/components/Modal.vue";
 import IconButton from "@/components/IconButton.vue";
 export default {
-  emits: ["closeModal"],
+  emits: ["closeModal", "modalBtnClick"],
   components: {
     Modal,
     IconButton,
@@ -135,14 +139,22 @@ export default {
     closeModal() {
       this.$emit("closeModal");
     },
+    modalBtnClick() {
+      console.log(this.form);
+      this.$emit("modalBtnClick", this.form);
+    },
   },
   computed: {},
   data: () => ({
     msg: null,
     snackbar: false,
     form: {
+      first_name: null,
+      last_name: null,
+      phone_number: null,
       email: null,
       password: null,
+      password_confirmation: null,
     },
     rules: {
       email: (v) => !!(v || "").match(/@/) || "Please enter a valid email",

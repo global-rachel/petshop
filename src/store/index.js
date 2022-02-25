@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 const API_HOST = 'https://pet-shop.buckhill.com.hr/api/v1/'
 const PAGE_ADMIN = 'admin'
+const PAGE_USER = 'user'
 
 export default new Vuex.Store({
   state: {
@@ -70,6 +71,17 @@ export default new Vuex.Store({
           reject(error.response.data.error)
         })
       })
+    },
+    createUserAPI:(context,payload)=>{
+      return new Promise((resolve,reject)=>{
+        axios.post(`${API_HOST}${PAGE_USER}/create`,payload).then(()=>{
+          resolve();
+        }).catch(error=>{
+          console.log(error)
+          reject(error.response.data.error)
+        })
+      })
+
     }
   },
   modules: {
