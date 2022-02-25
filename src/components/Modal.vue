@@ -1,9 +1,9 @@
 <template>
   <div class="modal" v-show="modelValue">
-    <div class="modal-background" @click.self="turnOffModal">
+    <div class="modal-background" @click.self="closeModal()">
       <v-card class="modal-area" rounded="6px" :style="modalStyle">
-        <h5 class="text-h5">Edit Customer</h5>
-        <v-icon class="x-button" size="14px" @click.prevent="turnOffModal">
+        <h5 class="text-h5">{{ title }}</h5>
+        <v-icon class="x-button" size="14px" @click.prevent="closeModal()">
           mdi-close
         </v-icon>
         <div class="modal-content">
@@ -15,7 +15,11 @@
 </template>
 <script>
 export default {
-  props: { modalStyle: { type: String } },
+  props: {
+    modalStyle: { type: String },
+    title: { type: String },
+  },
+  emits: ["closeModal"],
   data: () => ({
     isSuccess: false,
     isLoading: false,
@@ -24,8 +28,9 @@ export default {
   }),
   computed: {},
   methods: {
-    turnOffModal: function () {
-      this.$store.commit("setModalOpen", false);
+    closeModal: function () {
+      this.$emit("closeModal");
+      // this.$store.commit("setModalOpen", false);
     },
   },
 };

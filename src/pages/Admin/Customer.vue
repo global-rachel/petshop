@@ -9,7 +9,12 @@
           <div>All Customers</div>
           <v-spacer></v-spacer>
 
-          <v-btn color="primary" dark class="mr-3" v-bind="attrs" v-on="on">
+          <v-btn
+            color="primary"
+            dark
+            class="mr-3"
+            @click="() => (isAddCustomer = true)"
+          >
             <v-icon class="x-button" size="14px"> mdi-plus </v-icon>
             Add New Customers
           </v-btn>
@@ -113,9 +118,19 @@
         </v-row>
 
         <!-- Pop up -->
-        <EditCustomer v-if="dialog" />
+        <EditCustomer
+          v-if="isEditCustomer"
+          @closeModal="isEditCustomer = false"
+          :title="'Edit Customer'"
+          :btnText="'Edit Customer'"
+        />
+        <EditCustomer
+          v-if="isAddCustomer"
+          @closeModal="isAddCustomer = false"
+          :title="'Add Customer'"
+          :btnText="'Add New Customer'"
+        />
 
-        <!-- v-model="dialog" -->
         <v-dialog max-width="500px">
           <v-card>
             <v-card-title>
@@ -276,7 +291,8 @@ export default {
       address: "",
     },
     isFilterOpen: false,
-    dialog: true,
+    isAddCustomer: false,
+    isEditCustomer: false,
     headers: [
       {
         text: "Name",
@@ -348,9 +364,6 @@ export default {
     dialog(val) {
       val || this.close();
     },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
   },
   methods: {
     initialize() {
@@ -401,7 +414,7 @@ export default {
       console.log("edit" + item);
       // this.editedIndex = this.desserts.indexOf(item);
       // this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.isEditCustomer = true;
     },
 
     deleteItem(item) {

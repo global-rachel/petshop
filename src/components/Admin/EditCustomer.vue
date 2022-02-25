@@ -1,7 +1,12 @@
 <template>
-  <Modal :modalStyle="'padding: 25px 48px 48px;'">
+  <Modal
+    :modalStyle="'padding: 25px 48px 48px;'"
+    @closeModal="closeModal()"
+    :title="title"
+  >
     <template v-slot:modal-content>
       <v-form class="mt-6">
+        <!-- Icon -->
         <div class="d-flex w-100 justify-center">
           <IconButton
             :color="'#ECF0EF'"
@@ -12,6 +17,7 @@
             :iconSize="50"
           />
         </div>
+        <!-- Name -->
         <div class="d-flex">
           <v-text-field
             v-model="form.email"
@@ -79,7 +85,6 @@
           row-height="15"
           append-icon="mdi-eye"
         ></v-text-field>
-
         <v-text-field
           v-model="form.password"
           ref="password"
@@ -94,7 +99,7 @@
           append-icon="mdi-eye"
         ></v-text-field>
         <v-btn class="mt-9 btn" color="primary" block @click="login()">
-          Add New Customer
+          {{ btnText }}
         </v-btn>
       </v-form>
       <v-snackbar v-model="snackbar" top color="red accent-2" :timeout="5000">
@@ -113,28 +118,22 @@
 import Modal from "@/components/Modal.vue";
 import IconButton from "@/components/IconButton.vue";
 export default {
+  emits: ["closeModal"],
   components: {
     Modal,
     IconButton,
   },
+  props: {
+    title: {
+      type: String,
+    },
+    btnText: {
+      type: String,
+    },
+  },
   methods: {
-    async login() {
-      if (!(this.form.email || "").match(/@/) || !this.form.password) {
-        return;
-      }
-
-      try {
-        await this.$store.dispatch("login", {
-          email: this.form.email,
-          password: this.form.password,
-        });
-
-        this.$store.commit("setModalOpen", false);
-        window.location.reload();
-      } catch (error) {
-        this.snackbar = true;
-        this.msg = error;
-      }
+    closeModal() {
+      this.$emit("closeModal");
     },
   },
   computed: {},

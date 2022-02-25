@@ -1,5 +1,5 @@
 <template>
-  <Modal :modalStyle="'padding: 50px 73px;'">
+  <Modal :modalStyle="'padding: 50px 73px;'" @closeModal="closeModal()">
     <template v-slot:modal-content>
       <div class="w-100 d-flex flex-column align-center">
         <Logo />
@@ -77,6 +77,9 @@ export default {
         this.snackbar = true;
         this.msg = error;
       }
+    },
+    closeModal() {
+      this.$store.commit("setModalOpen", false);
     },
   },
   data: () => ({
