@@ -21,7 +21,7 @@ export const mixin = {
             "Dec",
             ];
 
-        return `${months[newDate.getMonth()-1]} ${newDate.getDate()}, ${newDate.getFullYear()}`
+        return `${months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getFullYear()}`
         },
         $isMobile(){
             let width =

@@ -39,11 +39,11 @@
           <v-col cols="12">
             <v-divider></v-divider>
           </v-col>
-          <v-col cols="4" v-for="filter in filterInputeText" :key="filter">
+          <v-col cols="4" v-for="filter in filterInputeText" :key="filter.key">
             <v-text-field
-              v-model="filterValue[filter]"
+              v-model="filterValue[filter.key]"
               append-icon="mdi-magnify"
-              :label="`Customer ${$capitalizeString(filter)}`"
+              :label="`Customer ${$capitalizeString(filter.label)}`"
               single-line
               hide-details
               outlined
@@ -55,7 +55,7 @@
           <v-col cols="4 d-flex">
             <v-menu class="w-50">
               <v-date-picker
-                v-model="filterValue.created_at"
+                v-model="filterValue.created_at_date"
                 no-title
                 scrollable
               >
@@ -71,7 +71,7 @@
                 <v-text-field
                   width="40px"
                   dense
-                  v-model="filterValue.created_at"
+                  v-model="filterValue.created_at_date"
                   label="Picker in menu"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -86,7 +86,7 @@
             <!-- Dropdown -->
             <div class="w-50 ml-3">
               <v-select
-                v-model="filterValue.marketing"
+                v-model="filterValue.is_marketing"
                 :items="marketingFilter"
                 label="Marketing Preference"
                 item-text="title"
@@ -229,14 +229,19 @@ export default {
         href: "",
       },
     ],
-    filterInputeText: ["first_name", "email", "phone", "address"],
+    filterInputeText: [
+      { label: "name", key: "name" },
+      { label: "email", key: "email" },
+      { label: "phone", key: "phone_number" },
+      { label: "address", key: "address" },
+    ],
     filterValue: {
-      first_name: "",
+      name: "",
       email: "",
-      phone: "",
+      phone_number: "",
       address: "",
-      created_at: "",
-      marketing: "",
+      created_at_date: "",
+      is_marketing: "",
     },
     isFilterOpen: false,
     marketingFilter: [
@@ -288,34 +293,50 @@ export default {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
     formatedData() {
-      return this.desserts.map((item) => {
-        return {
-          uuid: item.uuid,
-          address: item.address,
-          avatar: item.avatar,
-          created_at_date: this.$getGeneralDate(item.created_at),
-          created_at_time: this.$toLocaleTimeString(item.created_at),
-          email: item.email,
-          name: `${item.first_name} ${item.last_name}`,
-          is_marketing: item.is_marketing,
-          first_name: item.first_name,
-          last_name: item.last_name,
-          phone_number: item.phone_number,
-          isShowIcon: false,
-          isShowDelete: false,
-        };
-      });
+      return this.desserts
+        .map((item) => {
+          return {
+            uuid: item.uuid,
+            address: item.address,
+            avatar: item.avatar,
+            created_at_date: this.$getGeneralDate(item.created_at),
+            created_at_time: this.$toLocaleTimeString(item.created_at),
+            email: item.email,
+            name: `${item.first_name} ${item.last_name}`,
+            is_marketing: item.is_marketing + "",
+            first_name: item.first_name,
+            last_name: item.last_name,
+            phone_number: item.phone_number,
+            isShowIcon: false,
+            isShowDelete: false,
+          };
+        })
+        .filter((item) => {
+          let pass = true;
+          Object.keys(this.filterValue).forEach((filterKey) => {
+            if (
+              filterKey !== "created_at_date" &&
+              this.filterValue[filterKey] !== "" &&
+              !item[filterKey].includes(this.filterValue[filterKey])
+            )
+              pass = false;
+
+            if (
+              this.filterValue.created_at_date !== "" &&
+              this.$getGeneralDate(this.filterValue.created_at_date) !==
+                item.created_at_date
+            ) {
+              pass = false;
+            }
+          });
+
+          return pass;
+        });
     },
   },
   watch: {
     dialog(val) {
       val || this.close();
-    },
-    filterValue: {
-      handler() {
-        console.log(new Set(Object.values(this.filterValue)));
-      },
-      deep: true,
     },
   },
   methods: {
@@ -345,11 +366,11 @@ export default {
       item.isShowDelete = false;
     },
     getColor(value) {
-      if (value) return "primary";
+      if (value === "1") return "primary";
       else return "orange";
     },
     getMktText(value) {
-      if (value) return "Yes";
+      if (value === "1") return "Yes";
       else return "No";
     },
     editItem(item) {
