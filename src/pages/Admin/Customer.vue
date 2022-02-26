@@ -54,7 +54,11 @@
           <!-- Date Picker & Dropdown-->
           <v-col cols="4 d-flex">
             <v-menu class="w-50">
-              <v-date-picker v-model="date" no-title scrollable>
+              <v-date-picker
+                v-model="filterValue.created_at"
+                no-title
+                scrollable
+              >
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="menu = false">
                   Cancel
@@ -67,7 +71,7 @@
                 <v-text-field
                   width="40px"
                   dense
-                  v-model="date"
+                  v-model="filterValue.created_at"
                   label="Picker in menu"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -80,37 +84,26 @@
             </v-menu>
 
             <!-- Dropdown -->
-            <div class="text-center ml-3 w-50">
-              <v-menu offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    width="100%"
-                    v-bind="attrs"
-                    v-on="on"
-                    outlined
-                    class="filterDropdown"
-                    height="40"
-                    >Marketing Preference
-                    <v-icon class="ml-3"> mdi-menu-down </v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item v-for="(item, index) in items" :key="index">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+            <div class="w-50 ml-3">
+              <v-select
+                v-model="filterValue.marketing"
+                :items="marketingFilter"
+                label="Marketing Preference"
+                item-text="title"
+                item-value="value"
+                dense
+                outlined
+              ></v-select>
             </div>
           </v-col>
           <v-col>
             <v-btn
-              color="primary"
-              class="mr-3"
-              v-bind="attrs"
-              v-on="on"
+              color="orange"
+              class="mr-3 white--text"
               depressed
-              disabled
+              :disabled="!isFilterActive"
               height="40"
+              @click="resetFilter()"
             >
               Reset
             </v-btn>
@@ -121,8 +114,10 @@
         <EditCustomer
           v-if="isEditCustomer"
           @closeModal="isEditCustomer = false"
+          @modalBtnClick="sendEditUserAPI"
           :title="'Edit Customer'"
           :btnText="'Edit Customer'"
+          :editedItem="editedItem"
         />
         <EditCustomer
           v-if="isAddCustomer"
@@ -131,56 +126,6 @@
           :title="'Add Customer'"
           :btnText="'Add New Customer'"
         />
-
-        <v-dialog max-width="500px">
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="Dessert name"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.calories"
-                      label="Calories"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.fat"
-                      label="Fat (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.carbs"
-                      label="Carbs (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.protein"
-                      label="Protein (g)"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
       </template>
 
       <!-- Customized Columns -->
@@ -227,7 +172,7 @@
         />
         <IconButton
           v-if="item.isShowDelete && item.isShowIcon"
-          @btnClick="editItem(item)"
+          @btnClick="deleteItem(item)"
           class="mr-4"
           :color="'white'"
           :classString="'success--text'"
@@ -235,7 +180,7 @@
         />
         <IconButton
           v-if="item.isShowDelete && item.isShowIcon"
-          @btnClick="editItem(item)"
+          @btnClick="() => (item.isShowDelete = false)"
           class="mr-4"
           :classString="'red--text'"
           :color="'white'"
@@ -284,14 +229,20 @@ export default {
         href: "",
       },
     ],
-    filterInputeText: ["name", "email", "phone", "address"],
+    filterInputeText: ["first_name", "email", "phone", "address"],
     filterValue: {
-      name: "",
+      first_name: "",
       email: "",
       phone: "",
       address: "",
+      created_at: "",
+      marketing: "",
     },
     isFilterOpen: false,
+    marketingFilter: [
+      { title: "Yes", value: "1" },
+      { title: "No", value: "0" },
+    ],
     isAddCustomer: false,
     isEditCustomer: false,
     headers: [
@@ -323,29 +274,23 @@ export default {
       },
     ],
     desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
-    defaultItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
+    editedItem: null,
   }),
   computed: {
+    isFilterActive() {
+      let isFiltering = false;
+      Object.keys(this.filterValue).forEach((key) => {
+        if (this.filterValue[key].length > 0) isFiltering = true;
+      });
+      return isFiltering;
+    },
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
     formatedData() {
       return this.desserts.map((item) => {
         return {
+          uuid: item.uuid,
           address: item.address,
           avatar: item.avatar,
           created_at_date: this.$getGeneralDate(item.created_at),
@@ -353,6 +298,7 @@ export default {
           email: item.email,
           name: `${item.first_name} ${item.last_name}`,
           is_marketing: item.is_marketing,
+          first_name: item.first_name,
           last_name: item.last_name,
           phone_number: item.phone_number,
           isShowIcon: false,
@@ -365,47 +311,29 @@ export default {
     dialog(val) {
       val || this.close();
     },
+    filterValue: {
+      handler() {
+        console.log(new Set(Object.values(this.filterValue)));
+      },
+      deep: true,
+    },
   },
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          address: "509 Leonor Common, West Karinaberg, AL",
-          avatar: null,
-          created_at: "2022-02-23T05:30:52.000000Z",
-          email: "joenas@gmail.com",
-          email_verified_at: null,
-          first_name: "Joe",
-          is_marketing: 0,
-          last_login_at: "2022-02-23 11:11:24",
-          last_name: "Nas",
-          phone_number: "(218) 388-7126",
-          updated_at: "2022-02-23T11:11:24.000000Z",
-          uuid: "80df51a7-b8d1-460d-9edf-95516248c0f7",
-        },
-        {
-          address: "509 Leonor Common, West Karinaberg, AL",
-          avatar: null,
-          created_at: "2022-02-23T05:30:52.000000Z",
-          email: "joenas@gmail.com",
-          email_verified_at: null,
-          first_name: "Joe",
-          is_marketing: 1,
-          last_login_at: "2022-02-23 11:11:24",
-          last_name: "Nas",
-          phone_number: "(218) 388-7126",
-          updated_at: "2022-02-23T11:11:24.000000Z",
-          uuid: "80df51a7-b8d1-460d-9edf-95516248c0f7",
-        },
-      ];
+    async initialize() {
+      const { data } = await this.$store.dispatch("getAllUsersAPI");
+      this.desserts = data.data;
     },
     async sendEditUserAPI(payload) {
-      console.log(payload);
-
       try {
-        await this.$store.dispatch("createUserAPI", payload);
-        this.isAddCustomer = false;
-        //TODO: reload of data renewed
+        if (this.isAddCustomer) {
+          await this.$store.dispatch("createUserAPI", payload);
+          this.isAddCustomer = false;
+        }
+        if (this.isEditCustomer) {
+          await this.$store.dispatch("editUserAPI", payload);
+          this.isEditCustomer = false;
+        }
+        this.initialize();
       } catch (error) {
         // TODO:
         // this.snackbar = true;
@@ -425,51 +353,21 @@ export default {
       else return "No";
     },
     editItem(item) {
-      console.log("edit" + item);
-      // this.editedIndex = this.desserts.indexOf(item);
-      // this.editedItem = Object.assign({}, item);
+      this.editedItem = item;
       this.isEditCustomer = true;
     },
-
     deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
+      this.$store.dispatch("deleteUserAPI", item.uuid);
+      this.isShowDelete = false;
+      this.initialize();
     },
-
-    deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
+    resetFilter() {
+      Object.keys(this.filterValue).forEach((key) => {
+        this.filterValue[key] = "";
       });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
-      }
-      this.close();
     },
   },
-  async created() {
-    // const res = await this.$store.dispatch("getAllUsersAPI");
-    // console.log(res);
+  created() {
     this.initialize();
   },
 };
@@ -500,14 +398,6 @@ $fourth-black: rgba(0, 0, 0, 0.23);
 ::v-deep tr:hover {
   background: $lightGreen !important;
 }
-
-// ::v-deep .v-btn {
-//   position: inherit;
-// }
-
-// ::v-deep .v-chip {
-//   position: inherit;
-// }
 
 ::v-deep .row {
   margin: 0px;

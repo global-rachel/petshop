@@ -58,19 +58,19 @@ export default new Vuex.Store({
         })
       })
     },
-    getAllUsersAPI: (context)=>{
-      return new Promise((resolve,reject)=>{
-        axios.get(`${API_HOST}${PAGE_ADMIN}/user-listing`,{
+    getAllUsersAPI: async (context)=>{   
+      try {
+        const res = await axios.get(`${API_HOST}${PAGE_ADMIN}/user-listing`,{
           headers:{
             Authorization: `${context.state.token}`
           }
-        }).then(()=>{
-          resolve();
-        }).catch(error=>{
-          console.log(error)
-          reject(error.response.data.error)
         })
-      })
+        return res
+        
+      } catch(error){
+        console.log(error)
+      }
+      
     },
     createUserAPI:(context,payload)=>{
       return new Promise((resolve,reject)=>{
@@ -82,7 +82,35 @@ export default new Vuex.Store({
         })
       })
 
+    },
+    editUserAPI:()=>{
+      return true
+      // return new Promise((resolve,reject)=>{
+      //   axios.put(`${API_HOST}${PAGE_USER}/edit`,payload).then(()=>{
+      //     resolve();
+      //   }).catch(error=>{
+      //     console.log(error)
+      //     reject(error.response.data.error)
+      //   })
+      // })
+
+    },
+    deleteUserAPI:(context,uuid)=>{
+      return new Promise((resolve,reject)=>{
+        axios.delete(`${API_HOST}${PAGE_ADMIN}/user-delete/${uuid}`,{
+          headers:{
+            Authorization: `${context.state.token}`
+          }
+        }).then(()=>{
+          resolve();
+        }).catch(error=>{
+          console.log(error)
+          reject(error.response.data.error)
+        })
+      })
+
     }
+
   },
   modules: {
   },
