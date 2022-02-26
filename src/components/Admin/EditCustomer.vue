@@ -134,6 +134,9 @@ export default {
     btnText: {
       type: String,
     },
+    editedItem: {
+      type: Object,
+    },
   },
   methods: {
     closeModal() {
@@ -144,7 +147,15 @@ export default {
       this.$emit("modalBtnClick", this.form);
     },
   },
-  computed: {},
+  watch: {
+    editedItem: {
+      handler() {
+        this.form = this.editedItem;
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   data: () => ({
     msg: null,
     snackbar: false,
