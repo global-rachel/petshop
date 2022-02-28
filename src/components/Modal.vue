@@ -24,7 +24,6 @@ export default {
     isSuccess: false,
     isLoading: false,
     modelValue: true,
-    title: "Log In",
   }),
   computed: {},
   methods: {

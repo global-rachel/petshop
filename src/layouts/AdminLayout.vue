@@ -58,8 +58,6 @@ export default {
     isCurrentPage(name) {
       return this.$route.name == name;
     },
-  },
-  computed: {
     isSideMenuOpen() {
       return !this.$isMobile() || this.$store.state.isSideMenuOpen;
     },

@@ -1,5 +1,9 @@
 <template>
-  <Modal :modalStyle="'padding: 50px 73px;'" @closeModal="closeModal()">
+  <Modal
+    :modalStyle="'padding: 50px 73px;'"
+    @closeModal="closeModal()"
+    :title="'Log In'"
+  >
     <template v-slot:modal-content>
       <div class="w-100 d-flex flex-column align-center">
         <Logo />
@@ -61,7 +65,7 @@ export default {
   },
   methods: {
     async login() {
-      if (!(this.form.email || "").match(/@/) || !this.form.password) {
+      if (!(this.form.email || "").match(/.+@.+/) || !this.form.password) {
         return;
       }
 
@@ -90,7 +94,7 @@ export default {
       password: null,
     },
     rules: {
-      email: (v) => !!(v || "").match(/@/) || "Please enter a valid email",
+      email: (v) => !!(v || "").match(/.+@.+/) || "Please enter a valid email",
       length: (len) => (v) =>
         (v || "").length >= len || `Invalid character length, required ${len}`,
       password: (v) => !!(v || "") || "Please enter a valid password",

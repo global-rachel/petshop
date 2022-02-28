@@ -115,7 +115,7 @@
           v-if="isEditCustomer"
           @closeModal="isEditCustomer = false"
           @modalBtnClick="sendEditUserAPI"
-          :title="'Edit Customer'"
+          :modalTitle="'Edit Customer'"
           :btnText="'Edit Customer'"
           :editedItem="editedItem"
         />
@@ -123,7 +123,7 @@
           v-if="isAddCustomer"
           @closeModal="isAddCustomer = false"
           @modalBtnClick="sendEditUserAPI"
-          :title="'Add Customer'"
+          :modalTitle="'Add Customer'"
           :btnText="'Add New Customer'"
         />
       </template>
@@ -345,6 +345,7 @@ export default {
       this.desserts = data.data;
     },
     async sendEditUserAPI(payload) {
+      console.log("sendEditUserAPI");
       try {
         if (this.isAddCustomer) {
           await this.$store.dispatch("createUserAPI", payload);

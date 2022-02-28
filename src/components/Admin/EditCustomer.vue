@@ -2,10 +2,10 @@
   <Modal
     :modalStyle="'padding: 25px 48px 48px;'"
     @closeModal="closeModal()"
-    :title="title"
+    :title="modalTitle"
   >
     <template v-slot:modal-content>
-      <v-form class="mt-6">
+      <v-form ref="form" class="mt-6" lazy-validation>
         <!-- Icon -->
         <div class="d-flex w-100 justify-center">
           <IconButton
@@ -23,7 +23,7 @@
             v-model="form.first_name"
             class="mr-5"
             ref="first_name"
-            :rules="[rules.password]"
+            :rules="[checkRequired]"
             outlined
             label="First Name"
             type="first_name"
@@ -34,7 +34,7 @@
           <v-text-field
             v-model="form.last_name"
             ref="last_name"
-            :rules="[rules.password]"
+            :rules="[checkRequired]"
             outlined
             label="Last Name"
             type="last_name"
@@ -45,7 +45,7 @@
         <v-text-field
           v-model="form.email"
           ref="email"
-          :rules="[rules.email]"
+          :rules="[checkEmail, checkRequired]"
           outlined
           label="Email address*"
           type="email"
@@ -56,6 +56,7 @@
           outlined
           label="Phone"
           v-model="form.phone_number"
+          :rules="[checkRequired, checkLength(6)]"
         ></v-text-field>
         <v-text-field outlined label="Address" v-model="form.address">
           <template v-slot:append>
@@ -79,7 +80,7 @@
         <v-text-field
           v-model="form.password"
           ref="password"
-          :rules="[rules.password]"
+          :rules="[checkRequired, checkLength(8)]"
           filled
           auto-grow
           outlined
@@ -92,7 +93,7 @@
         <v-text-field
           v-model="form.password_confirmation"
           ref="password"
-          :rules="[rules.password]"
+          :rules="[isMatchingPassword, checkRequired]"
           filled
           auto-grow
           outlined
@@ -128,7 +129,7 @@ export default {
     IconButton,
   },
   props: {
-    title: {
+    modalTitle: {
       type: String,
     },
     btnText: {
@@ -143,13 +144,39 @@ export default {
       this.$emit("closeModal");
     },
     modalBtnClick() {
-      console.log(this.form);
-      this.$emit("modalBtnClick", this.form);
+      this.$refs.form.validate();
+      console.log(this.valid);
+      if (this.valid) this.$emit("modalBtnClick", this.form);
+    },
+    isMatchingPassword() {
+      const pass = this.form.password === this.form.password_confirmation;
+      if (!pass) this.valid = false;
+      return pass || "Passwords does not match.";
+    },
+    checkEmail(v) {
+      const pass = !!(v || "").match(/.+@.+/);
+      if (!pass) this.valid = false;
+      return pass || "Please enter a valid email";
+    },
+    checkLength: function (len) {
+      let _this = this;
+      return function (v) {
+        const pass = (v || "").length >= len;
+        if (!pass) _this.valid = false;
+        return pass || `Invalid length, required at least ${len}`;
+      };
+    },
+    checkRequired(v) {
+      const pass = !!(v || "");
+      if (!pass) this.valid = false;
+      return pass || "This field is required";
     },
   },
+  computed: {},
   watch: {
     editedItem: {
       handler() {
+        if (!this.editedItem) return;
         this.form = this.editedItem;
       },
       immediate: true,
@@ -157,22 +184,16 @@ export default {
     },
   },
   data: () => ({
+    valid: true,
     msg: null,
     snackbar: false,
     form: {
-      first_name: null,
-      last_name: null,
-      phone_number: null,
-      email: null,
-      password: null,
-      password_confirmation: null,
-    },
-    rules: {
-      email: (v) => !!(v || "").match(/@/) || "Please enter a valid email",
-      length: (len) => (v) =>
-        (v || "").length >= len || `Invalid character length, required ${len}`,
-      password: (v) => !!(v || "") || "Please enter a valid password",
-      required: (v) => !!v || "This field is required",
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
     },
   }),
 };
