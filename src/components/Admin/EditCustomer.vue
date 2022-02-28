@@ -23,7 +23,7 @@
             v-model="form.first_name"
             class="mr-5"
             ref="first_name"
-            :rules="[checkRequired]"
+            :rules="[checkRequired, checkLength(3)]"
             outlined
             label="First Name"
             type="first_name"

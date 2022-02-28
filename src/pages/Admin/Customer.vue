@@ -2,7 +2,13 @@
   <div>
     <AdminTitle :items="breadcrumbItems" />
     <v-divider class="my-6"></v-divider>
-    <v-data-table :headers="headers" :items="formatedData" class="table">
+    <v-data-table
+      :headers="headers"
+      :items="formatedData"
+      :loading="isLoading"
+      loading-text="Loading... Please wait"
+      class="table"
+    >
       <!-- Table Top -->
       <template v-slot:top>
         <v-toolbar flat style="position: relative">
@@ -166,14 +172,14 @@
       <!-- Setting -->
       <template v-slot:item.actions="{ item }">
         <IconButton
-          v-if="item.isShowIcon && !item.isShowDelete"
+          v-if="isShowIcon && !isShowDelete && item.uuid === clickedItem"
           @btnClick="editItem(item)"
           class="mr-4"
           :color="'white'"
           :icon="'mdi-pencil'"
         />
         <IconButton
-          v-if="item.isShowDelete && item.isShowIcon"
+          v-if="isShowDelete && isShowIcon && item.uuid === clickedItem"
           @btnClick="deleteItem(item)"
           class="mr-4"
           :color="'white'"
@@ -181,16 +187,16 @@
           :icon="'mdi-check'"
         />
         <IconButton
-          v-if="item.isShowDelete && item.isShowIcon"
-          @btnClick="() => (item.isShowDelete = false)"
+          v-if="isShowDelete && isShowIcon && item.uuid === clickedItem"
+          @btnClick="() => (isShowDelete = false)"
           class="mr-4"
           :classString="'red--text'"
           :color="'white'"
           :icon="'mdi-window-close'"
         />
         <IconButton
-          v-if="item.isShowIcon"
-          @btnClick="() => (item.isShowDelete = true)"
+          v-if="isShowIcon && item.uuid === clickedItem"
+          @btnClick="() => (isShowDelete = true)"
           :color="'white'"
           class="mr-4"
           :icon="'mdi-delete'"
@@ -282,6 +288,10 @@ export default {
     ],
     desserts: [],
     editedItem: null,
+    clickedItem: null,
+    isShowIcon: false,
+    isShowDelete: false,
+    isLoading: true,
   }),
   computed: {
     isFilterActive() {
@@ -338,8 +348,10 @@ export default {
   },
   methods: {
     async initialize() {
+      this.isLoading = true;
       const { data } = await this.$store.dispatch("getAllUsersAPI");
       this.desserts = data.data;
+      this.isLoading = false;
     },
     async sendEditUserAPI(payload) {
       console.log("sendEditUserAPI");
@@ -364,8 +376,11 @@ export default {
       }
     },
     handleIconClick(item) {
-      item.isShowIcon = !item.isShowIcon;
-      item.isShowDelete = false;
+      if (this.clickedItem === item.uuid) this.isShowIcon = !this.isShowIcon;
+      else this.isShowIcon = true;
+
+      this.clickedItem = item.uuid;
+      this.isShowDelete = false;
     },
     getColor(value) {
       if (value === "1") return "primary";
