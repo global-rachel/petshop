@@ -1,9 +1,5 @@
 <template>
-  <Modal
-    :modalStyle="'padding: 50px 73px;'"
-    @closeModal="closeModal()"
-    :title="'Log In'"
-  >
+  <Modal :modalStyle="'padding: 50px 73px;'" @closeModal="closeModal()">
     <template v-slot:modal-content>
       <div class="w-100 d-flex flex-column align-center">
         <Logo />
@@ -75,11 +71,11 @@ export default {
           password: this.form.password,
         });
 
-        this.$store.commit("setModalOpen", false);
+        this.$store.commit("setLoginModalOpen", false);
         window.location.reload();
       } catch (error) {
         this.snackbar = true;
-        this.msg = error;
+        this.msg = error.response?.data?.error;
       }
     },
     closeModal() {

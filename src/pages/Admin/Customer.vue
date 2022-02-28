@@ -112,6 +112,7 @@
 
         <!-- Pop up -->
         <EditCustomer
+          ref="editCustomerModal"
           v-if="isEditCustomer"
           @closeModal="isEditCustomer = false"
           @modalBtnClick="sendEditUserAPI"
@@ -120,6 +121,7 @@
           :editedItem="editedItem"
         />
         <EditCustomer
+          ref="addCustomerModal"
           v-if="isAddCustomer"
           @closeModal="isAddCustomer = false"
           @modalBtnClick="sendEditUserAPI"
@@ -334,11 +336,6 @@ export default {
         });
     },
   },
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-  },
   methods: {
     async initialize() {
       const { data } = await this.$store.dispatch("getAllUsersAPI");
@@ -357,9 +354,13 @@ export default {
         }
         this.initialize();
       } catch (error) {
-        // TODO:
-        // this.snackbar = true;
-        this.msg = error;
+        if (this.isAddCustomer) this.$refs.addCustomerModal.snackbar = true;
+        this.$refs.addCustomerModal.msg = error;
+      } finally {
+        setTimeout(() => {
+          this.isAddCustomer = false;
+          this.isEditCustomer = false;
+        }, 5000);
       }
     },
     handleIconClick(item) {

@@ -2,7 +2,7 @@
   <v-app id="inspire">
     <Header />
     <router-view />
-    <Login v-if="isModalOpen" />
+    <Login v-if="isLoginModalOpen" />
   </v-app>
 </template>
 
@@ -14,8 +14,8 @@ export default {
   components: { Header, Login },
   data: () => ({}),
   computed: {
-    isModalOpen() {
-      return this.$store.state.isModalOpen;
+    isLoginModalOpen() {
+      return this.$store.state.isLoginModalOpen;
     },
   },
 };

@@ -139,13 +139,25 @@ export default {
       type: Object,
     },
   },
+  data: () => ({
+    valid: true,
+    msg: null,
+    snackbar: false,
+    form: {
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+    },
+  }),
   methods: {
     closeModal() {
       this.$emit("closeModal");
     },
     modalBtnClick() {
       this.$refs.form.validate();
-      console.log(this.valid);
       if (this.valid) this.$emit("modalBtnClick", this.form);
     },
     isMatchingPassword() {
@@ -183,19 +195,6 @@ export default {
       deep: true,
     },
   },
-  data: () => ({
-    valid: true,
-    msg: null,
-    snackbar: false,
-    form: {
-      first_name: "",
-      last_name: "",
-      phone_number: "",
-      email: "",
-      password: "",
-      password_confirmation: "",
-    },
-  }),
 };
 </script>
 <style lang="scss" scoped>

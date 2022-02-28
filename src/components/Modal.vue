@@ -29,7 +29,6 @@ export default {
   methods: {
     closeModal: function () {
       this.$emit("closeModal");
-      // this.$store.commit("setModalOpen", false);
     },
   },
 };

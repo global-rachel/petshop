@@ -12,15 +12,15 @@ const PAGE_USER = 'user'
 export default new Vuex.Store({
   state: {
     token:  null,
-    isModalOpen: false,
+    isLoginModalOpen: false,
     isSideMenuOpen: false,
   },
   mutations: {
     setToken: (state, payload)=>{
       state.token = payload
     },
-    setModalOpen: (state, payload)=>{
-      state.isModalOpen = payload
+    setLoginModalOpen: (state, payload)=>{
+      state.isLoginModalOpen = payload
     },
     toggleSideMenu: (state)=>{
       state.isSideMenuOpen = !state.isSideMenuOpen
