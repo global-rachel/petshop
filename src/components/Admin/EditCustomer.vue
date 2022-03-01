@@ -107,10 +107,10 @@
           {{ btnText }}
         </v-btn>
       </v-form>
-      <v-snackbar v-model="snackbar" top color="red accent-2" :timeout="5000">
+      <v-snackbar v-model="alert" top color="red accent-2" :timeout="5000">
         {{ msg }}
         <template v-slot:action="{ attrs }">
-          <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-btn color="white" text v-bind="attrs" @click="alert = false">
             Close
           </v-btn>
         </template>
@@ -142,7 +142,7 @@ export default {
   data: () => ({
     valid: true,
     msg: null,
-    snackbar: false,
+    alert: false,
     form: {
       first_name: "",
       last_name: "",

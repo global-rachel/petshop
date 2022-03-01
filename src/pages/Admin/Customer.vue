@@ -8,9 +8,9 @@
       :loading="isLoading"
       :options.sync="options"
       :server-items-length="totalLength"
+      :footer-props="{ 'items-per-page-options': perPageDropdown }"
       loading-text="Loading... Please wait"
       class="table"
-      @items-per-page="setPerPage"
     >
       <!-- Table Top -->
       <template v-slot:top>
@@ -51,8 +51,7 @@
         <v-row
           transition="scroll-y-transition"
           v-if="isFilterOpen"
-          class="elevation-1"
-          style="background: white; width: 100%; top: 100%; left: 0%"
+          class="elevation-1 filter-container"
         >
           <v-col cols="12">
             <v-divider></v-divider>
@@ -171,12 +170,13 @@
           elevation="0"
           class="my-5 mr-6"
         >
-          <span class="white--text" style="font-size: 20px">
+          <span class="white--text avatar-text">
             {{ item.name[0] }}
           </span>
         </v-btn>
         {{ item.name }}
       </template>
+
       <!-- Date -->
       <template v-slot:item.created_at="{ item }">
         {{ item.created_at_date }} <br />
@@ -307,16 +307,17 @@ export default {
         width: "240px",
       },
     ],
-    desserts: [],
+    resData: [],
     editedItem: null,
     clickedItem: null,
     isShowIcon: false,
     isShowDelete: false,
     isLoading: true,
     totalLength: null,
+    perPageDropdown: [8, 16, 30],
     options: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: null,
     },
     timoutId: null,
     callAPItimes: 0,
@@ -333,7 +334,7 @@ export default {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
     formatedData() {
-      return this.desserts.map((item) => {
+      return this.resData.map((item) => {
         return {
           uuid: item.uuid,
           address: item.address,
@@ -350,27 +351,6 @@ export default {
           isShowDelete: false,
         };
       });
-      // .filter((item) => {
-      //   let pass = true;
-      //   Object.keys(this.filterValue).forEach((filterKey) => {
-      //     if (
-      //       filterKey !== "created_at_date" &&
-      //       this.filterValue[filterKey] !== "" &&
-      //       !item[filterKey].includes(this.filterValue[filterKey])
-      //     )
-      //       pass = false;
-
-      //     if (
-      //       this.filterValue.created_at_date !== "" &&
-      //       this.$getGeneralDate(this.filterValue.created_at_date) !==
-      //         item.created_at_date
-      //     ) {
-      //       pass = false;
-      //     }
-      //   });
-
-      //   return pass;
-      // });
     },
   },
   watch: {
@@ -382,9 +362,12 @@ export default {
     },
     filterValue: {
       handler() {
+        // Avoid double API calling with watch/options
         if (!this.callAPItimes) return;
         clearTimeout(this.timoutId);
-        this.timoutId = setTimeout(() => this.getUserListingAPI(), 3000);
+        this.options.page = 1;
+        // Will auto-search if the user is not typing for 2 secs
+        this.timoutId = setTimeout(() => this.getUserListingAPI(), 2000);
       },
       deep: true,
     },
@@ -392,27 +375,25 @@ export default {
   methods: {
     async getUserListingAPI() {
       this.isLoading = true;
+      this.options.itemsPerPage = this.perPageDropdown[0];
       let payload = {
         page: this.options.page,
         limit: this.options.itemsPerPage,
       };
       if (this.isFilterActive) payload = { ...payload, ...this.filterValue };
       const { data } = await this.$store.dispatch("getAllUsersAPI", payload);
-      this.desserts = data.data;
+      this.resData = data.data;
       this.totalLength = data.total;
       this.isLoading = false;
       this.callAPItimes += 1;
     },
     async sendEditUserAPI(payload) {
-      console.log("sendEditUserAPI");
       try {
         if (this.isAddCustomer) {
           await this.$store.dispatch("createUserAPI", payload);
-          this.isAddCustomer = false;
         }
         if (this.isEditCustomer) {
           await this.$store.dispatch("editUserAPI", payload);
-          this.isEditCustomer = false;
         }
         this.getUserListingAPI();
       } catch (error) {
@@ -424,9 +405,6 @@ export default {
           this.isEditCustomer = false;
         }, 5000);
       }
-    },
-    setPerPage(v) {
-      console.log(v);
     },
     handleIconClick(item) {
       if (this.clickedItem === item.uuid) this.isShowIcon = !this.isShowIcon;
@@ -480,6 +458,17 @@ $fourth-black: rgba(0, 0, 0, 0.23);
   .small-text {
     font-size: 12px;
     color: $tertiary-black;
+  }
+
+  .filter-container {
+    background: white;
+    width: 100%;
+    top: 100%;
+    left: 0%;
+  }
+
+  .avatar-text {
+    font-size: 20px;
   }
 }
 

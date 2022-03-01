@@ -87,7 +87,6 @@ export default {
   }),
   methods: {
     openSideMenu() {
-      console.log("openSideMenu");
       this.$store.commit("toggleSideMenu");
     },
     login() {
