@@ -61,12 +61,14 @@ export default new Vuex.Store({
         })
       })
     },
-    getAllUsersAPI: async (context)=>{   
+    getAllUsersAPI: async (context,payload)=>{   
+   
       try {
         const res = await axios.get(`${API_HOST}${PAGE_ADMIN}/user-listing`,{
           headers:{
             Authorization: `${context.state.token}`
-          }
+          },
+          params: payload
         })
         return res
         

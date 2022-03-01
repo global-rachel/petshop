@@ -23,7 +23,6 @@ const routes = [
     path: '/',
     name: 'Home',
     component: ()=>import('../layouts/ShopLayout.vue'),
-    redirect: '/admin/customers',
   },
   {
     path: '/:pathMatch(.*)*',

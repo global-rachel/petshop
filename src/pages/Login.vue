@@ -72,7 +72,8 @@ export default {
         });
 
         this.$store.commit("setLoginModalOpen", false);
-        window.location.reload();
+        // window.location.reload();
+        this.$router.push({ name: "Customers" });
       } catch (error) {
         this.snackbar = true;
         this.msg = error.response?.data?.error;

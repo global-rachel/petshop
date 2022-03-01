@@ -6,8 +6,11 @@
       :headers="headers"
       :items="formatedData"
       :loading="isLoading"
+      :options.sync="options"
+      :server-items-length="totalLength"
       loading-text="Loading... Please wait"
       class="table"
+      @items-per-page="setPerPage"
     >
       <!-- Table Top -->
       <template v-slot:top>
@@ -76,7 +79,7 @@
           <v-col cols="12" md="4" sm="6" class="d-flex">
             <v-menu class="w-50">
               <v-date-picker
-                v-model="filterValue.created_at_date"
+                v-model="filterValue.created_at"
                 no-title
                 scrollable
               >
@@ -92,7 +95,7 @@
                 <v-text-field
                   width="40px"
                   dense
-                  v-model="filterValue.created_at_date"
+                  v-model="filterValue.created_at"
                   label="Picker in menu"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -107,7 +110,7 @@
             <!-- Dropdown -->
             <div class="w-50 ml-3">
               <v-select
-                v-model="filterValue.is_marketing"
+                v-model="filterValue.marketing"
                 :items="marketingFilter"
                 label="Marketing Preference"
                 item-text="title"
@@ -155,7 +158,10 @@
       <!-- Name -->
       <template v-slot:item.name="{ item }">
         <v-avatar v-if="item.avatar" size="44" color="white" class="my-5 mr-6">
-          <img :src="item.avatar" alt="John" />
+          <img
+            src="https://cdn.vuetifyjs.com/images/john.jpg"
+            alt="item.name"
+          />
         </v-avatar>
         <v-btn
           v-if="!item.avatar"
@@ -253,18 +259,18 @@ export default {
       },
     ],
     filterInputeText: [
-      { label: "name", key: "name" },
+      { label: "name", key: "first_name" },
       { label: "email", key: "email" },
       { label: "phone", key: "phone_number" },
       { label: "address", key: "address" },
     ],
     filterValue: {
-      name: "",
+      first_name: "",
       email: "",
       phone_number: "",
       address: "",
-      created_at_date: "",
-      is_marketing: "",
+      created_at: "",
+      marketing: "",
     },
     isFilterOpen: false,
     marketingFilter: [
@@ -307,6 +313,13 @@ export default {
     isShowIcon: false,
     isShowDelete: false,
     isLoading: true,
+    totalLength: null,
+    options: {
+      page: 1,
+      itemsPerPage: 10,
+    },
+    timoutId: null,
+    callAPItimes: 0,
   }),
   computed: {
     isFilterActive() {
@@ -320,53 +333,75 @@ export default {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
     formatedData() {
-      return this.desserts
-        .map((item) => {
-          return {
-            uuid: item.uuid,
-            address: item.address,
-            avatar: item.avatar,
-            created_at_date: this.$getGeneralDate(item.created_at),
-            created_at_time: this.$toLocaleTimeString(item.created_at),
-            email: item.email,
-            name: `${item.first_name} ${item.last_name}`,
-            is_marketing: item.is_marketing + "",
-            first_name: item.first_name,
-            last_name: item.last_name,
-            phone_number: item.phone_number,
-            isShowIcon: false,
-            isShowDelete: false,
-          };
-        })
-        .filter((item) => {
-          let pass = true;
-          Object.keys(this.filterValue).forEach((filterKey) => {
-            if (
-              filterKey !== "created_at_date" &&
-              this.filterValue[filterKey] !== "" &&
-              !item[filterKey].includes(this.filterValue[filterKey])
-            )
-              pass = false;
+      return this.desserts.map((item) => {
+        return {
+          uuid: item.uuid,
+          address: item.address,
+          avatar: item.avatar,
+          created_at_date: this.$getGeneralDate(item.created_at),
+          created_at_time: this.$toLocaleTimeString(item.created_at),
+          email: item.email,
+          name: `${item.first_name} ${item.last_name}`,
+          is_marketing: item.is_marketing + "",
+          first_name: item.first_name,
+          last_name: item.last_name,
+          phone_number: item.phone_number,
+          isShowIcon: false,
+          isShowDelete: false,
+        };
+      });
+      // .filter((item) => {
+      //   let pass = true;
+      //   Object.keys(this.filterValue).forEach((filterKey) => {
+      //     if (
+      //       filterKey !== "created_at_date" &&
+      //       this.filterValue[filterKey] !== "" &&
+      //       !item[filterKey].includes(this.filterValue[filterKey])
+      //     )
+      //       pass = false;
 
-            if (
-              this.filterValue.created_at_date !== "" &&
-              this.$getGeneralDate(this.filterValue.created_at_date) !==
-                item.created_at_date
-            ) {
-              pass = false;
-            }
-          });
+      //     if (
+      //       this.filterValue.created_at_date !== "" &&
+      //       this.$getGeneralDate(this.filterValue.created_at_date) !==
+      //         item.created_at_date
+      //     ) {
+      //       pass = false;
+      //     }
+      //   });
 
-          return pass;
-        });
+      //   return pass;
+      // });
+    },
+  },
+  watch: {
+    options: {
+      handler() {
+        this.getUserListingAPI();
+      },
+      deep: true,
+    },
+    filterValue: {
+      handler() {
+        if (!this.callAPItimes) return;
+        clearTimeout(this.timoutId);
+        this.timoutId = setTimeout(() => this.getUserListingAPI(), 3000);
+      },
+      deep: true,
     },
   },
   methods: {
-    async initialize() {
+    async getUserListingAPI() {
       this.isLoading = true;
-      const { data } = await this.$store.dispatch("getAllUsersAPI");
+      let payload = {
+        page: this.options.page,
+        limit: this.options.itemsPerPage,
+      };
+      if (this.isFilterActive) payload = { ...payload, ...this.filterValue };
+      const { data } = await this.$store.dispatch("getAllUsersAPI", payload);
       this.desserts = data.data;
+      this.totalLength = data.total;
       this.isLoading = false;
+      this.callAPItimes += 1;
     },
     async sendEditUserAPI(payload) {
       console.log("sendEditUserAPI");
@@ -379,7 +414,7 @@ export default {
           await this.$store.dispatch("editUserAPI", payload);
           this.isEditCustomer = false;
         }
-        this.initialize();
+        this.getUserListingAPI();
       } catch (error) {
         if (this.isAddCustomer) this.$refs.addCustomerModal.snackbar = true;
         this.$refs.addCustomerModal.msg = error;
@@ -389,6 +424,9 @@ export default {
           this.isEditCustomer = false;
         }, 5000);
       }
+    },
+    setPerPage(v) {
+      console.log(v);
     },
     handleIconClick(item) {
       if (this.clickedItem === item.uuid) this.isShowIcon = !this.isShowIcon;
@@ -412,16 +450,13 @@ export default {
     deleteItem(item) {
       this.$store.dispatch("deleteUserAPI", item.uuid);
       this.isShowDelete = false;
-      this.initialize();
+      this.getUserListingAPI();
     },
     resetFilter() {
       Object.keys(this.filterValue).forEach((key) => {
         this.filterValue[key] = "";
       });
     },
-  },
-  created() {
-    this.initialize();
   },
 };
 </script>
