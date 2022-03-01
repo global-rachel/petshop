@@ -28,6 +28,9 @@ export default new Vuex.Store({
     }
   },
   getters:{
+    isLogin(state){
+      return state.token && state.token !== null;
+    }
   },
   actions: {    
     login: (context, {email, password})=>{

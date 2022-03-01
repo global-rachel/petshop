@@ -28,7 +28,7 @@ export const mixin = {
               window.innerWidth ||
               document.documentElement.clientWidth ||
               document.body.clientWidth
-            return width <= 576
+            return width <= 820
         },
         $capitalizeString(string){
             return string[0].toUpperCase() + string.slice(1)

@@ -5,6 +5,15 @@ Vue.use(Vuetify);
 
 
 export default new Vuetify({
+  
+    breakpoint: {
+    thresholds: {
+      xs: 340,
+      sm: 579,
+      md: 820,
+    },
+    mobileBreakpoint: 578,
+    },
     theme: {
         themes: {
           light: {

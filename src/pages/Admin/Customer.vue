@@ -11,29 +11,38 @@
     >
       <!-- Table Top -->
       <template v-slot:top>
-        <v-toolbar flat style="position: relative">
+        <v-toolbar flat :height="'fit-content'">
           <div>All Customers</div>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            color="primary"
-            dark
-            class="mr-3"
-            @click="() => (isAddCustomer = true)"
+          <div
+            class="d-flex"
+            :class="{
+              'w-100 justify-space-between my-2 flex-wrap':
+                $vuetify.breakpoint.mobile,
+              'ml-auto': !$vuetify.breakpoint.mobile,
+            }"
           >
-            <v-icon class="x-button" size="14px"> mdi-plus </v-icon>
-            Add New Customers
-          </v-btn>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <a
-            href="#"
-            class="filter-icon mx-7"
-            @click="() => (isFilterOpen = !isFilterOpen)"
-            >Filter
-            <v-icon class="ml-5">
-              {{ isFilterOpen ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon
-            ></a
-          >
+            <v-btn
+              color="primary"
+              dark
+              class="mr-3"
+              @click="() => (isAddCustomer = true)"
+            >
+              <v-icon class="x-button" size="14px"> mdi-plus </v-icon>
+              Add New Customers
+            </v-btn>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <a
+              href="#"
+              class="filter-icon mx-7 d-flex align-center"
+              @click="() => (isFilterOpen = !isFilterOpen)"
+              >Filter
+              <v-icon class="ml-5">
+                {{
+                  isFilterOpen ? "mdi-chevron-up" : "mdi-chevron-down"
+                }}</v-icon
+              ></a
+            >
+          </div>
         </v-toolbar>
         <!--  Filter Area -->
         <v-row
@@ -45,7 +54,13 @@
           <v-col cols="12">
             <v-divider></v-divider>
           </v-col>
-          <v-col cols="4" v-for="filter in filterInputeText" :key="filter.key">
+          <v-col
+            cols="12"
+            md="4"
+            sm="6"
+            v-for="filter in filterInputeText"
+            :key="filter.key"
+          >
             <v-text-field
               v-model="filterValue[filter.key]"
               append-icon="mdi-magnify"
@@ -58,7 +73,7 @@
             />
           </v-col>
           <!-- Date Picker & Dropdown-->
-          <v-col cols="4 d-flex">
+          <v-col cols="12" md="4" sm="6" class="d-flex">
             <v-menu class="w-50">
               <v-date-picker
                 v-model="filterValue.created_at_date"
@@ -448,6 +463,12 @@ $fourth-black: rgba(0, 0, 0, 0.23);
 
 ::v-deep button {
   text-transform: initial;
+}
+
+::v-deep .v-toolbar__content {
+  position: relative;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .filterDropdown {

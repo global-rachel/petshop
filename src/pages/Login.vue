@@ -79,7 +79,7 @@ export default {
       }
     },
     closeModal() {
-      this.$store.commit("setModalOpen", false);
+      this.$store.commit("setLoginModalOpen", false);
     },
   },
   data: () => ({

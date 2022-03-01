@@ -28,18 +28,21 @@
         />
       </div>
 
-      <div>
+      <!-- <div>
         <v-btn v-for="link in links" :key="link.name" text class="white--text">
           {{ link.name.toUpperCase() }}
           <v-icon v-if="link.sublinks">mdi-menu-down</v-icon>
         </v-btn>
-      </div>
+      </div> -->
 
-      <div>
-        <v-btn outlined color="white" class="ma-2" height="48">
+      <!-- Blank to center logo @mobile -->
+      <div v-if="$isMobile()" style="height: 48px; width: 48px"></div>
+
+      <div v-if="!$isMobile()">
+        <!-- <v-btn outlined color="white" class="ma-2" height="48">
           <v-icon left> mdi-cart </v-icon>
           CART(0)
-        </v-btn>
+        </v-btn> -->
         <v-btn
           v-if="!isLogin"
           outlined
@@ -84,10 +87,11 @@ export default {
   }),
   methods: {
     openSideMenu() {
+      console.log("openSideMenu");
       this.$store.commit("toggleSideMenu");
     },
     login() {
-      this.$store.commit("setModalOpen", true);
+      this.$store.commit("setLoginModalOpen", true);
     },
     logout() {
       this.$store.dispatch("logout");
