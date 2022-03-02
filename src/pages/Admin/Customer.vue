@@ -142,6 +142,8 @@
           :modalTitle="'Edit Customer'"
           :btnText="'Edit Customer'"
           :editedItem="editedItem"
+          :isModalLoading="isModalLoading"
+          :alert="modalAlert"
         />
         <EditCustomer
           ref="addCustomerModal"
@@ -150,6 +152,8 @@
           @modalBtnClick="sendEditUserAPI"
           :modalTitle="'Add Customer'"
           :btnText="'Add New Customer'"
+          :isModalLoading="isModalLoading"
+          :alert="modalAlert"
         />
       </template>
 
@@ -234,7 +238,7 @@
 
       <!-- No Data -->
       <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize"> Reset </v-btn>
+        <v-btn color="primary" @click="getUserListingAPI()"> Reset </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -312,7 +316,9 @@ export default {
     clickedItem: null,
     isShowIcon: false,
     isShowDelete: false,
-    isLoading: true,
+    isLoading: false,
+    isModalLoading: false,
+    modalAlert: false,
     totalLength: null,
     perPageDropdown: [8, 16, 30],
     options: {
@@ -367,7 +373,10 @@ export default {
         clearTimeout(this.timoutId);
         this.options.page = 1;
         // Will auto-search if the user is not typing for 2 secs
-        this.timoutId = setTimeout(() => this.getUserListingAPI(), 2000);
+        this.timoutId = setTimeout(
+          () => this.getUserListingAPI(),
+          2000
+        );
       },
       deep: true,
     },
@@ -375,36 +384,40 @@ export default {
   methods: {
     async getUserListingAPI() {
       this.isLoading = true;
-      this.options.itemsPerPage = this.perPageDropdown[0];
       let payload = {
         page: this.options.page,
         limit: this.options.itemsPerPage,
       };
       if (this.isFilterActive) payload = { ...payload, ...this.filterValue };
+      this.callAPItimes += 1;
       const { data } = await this.$store.dispatch("getAllUsersAPI", payload);
       this.resData = data.data;
       this.totalLength = data.total;
       this.isLoading = false;
-      this.callAPItimes += 1;
     },
     async sendEditUserAPI(payload) {
-
       try {
+        this.isModalLoading = true;
         if (this.isAddCustomer) {
           await this.$store.dispatch("createUserAPI", payload);
+          this.isAddCustomer = false;
         }
         if (this.isEditCustomer) {
           await this.$store.dispatch("editUserAPI", payload);
+          this.isEditCustomer = false;
         }
         this.getUserListingAPI();
       } catch (error) {
-        if (this.isAddCustomer) this.$refs.addCustomerModal.snackbar = true;
-        this.$refs.addCustomerModal.msg = error;
-      } finally {
+        if (this.isAddCustomer) this.$refs.addCustomerModal.alert = true;
+        this.$refs.addCustomerModal.msg = error.response?.data?.error;
+
+        // Show error for a few secs
         setTimeout(() => {
           this.isAddCustomer = false;
           this.isEditCustomer = false;
-        }, 5000);
+        }, 3000);
+      } finally {
+        this.isModalLoading = false;
       }
     },
     handleIconClick(item) {
@@ -441,6 +454,9 @@ export default {
         this.filterValue[key] = "";
       });
     },
+  },
+  created() {
+    this.options.itemsPerPage = this.perPageDropdown[0];
   },
 };
 </script>

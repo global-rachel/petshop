@@ -34,7 +34,7 @@
           <v-text-field
             v-model="form.last_name"
             ref="last_name"
-            :rules="[checkRequired]"
+            :rules="[checkRequired, checkLength(3)]"
             outlined
             label="Last Name"
             type="last_name"
@@ -103,7 +103,13 @@
           row-height="15"
           append-icon="mdi-eye"
         ></v-text-field>
-        <v-btn class="mt-9 btn" color="primary" block @click="modalBtnClick()">
+        <v-btn
+          class="mt-9 btn"
+          color="primary"
+          block
+          @click="modalBtnClick()"
+          :loading="isModalLoading"
+        >
           {{ btnText }}
         </v-btn>
       </v-form>
@@ -137,6 +143,9 @@ export default {
     },
     editedItem: {
       type: Object,
+    },
+    isModalLoading: {
+      type: Boolean,
     },
   },
   data: () => ({
