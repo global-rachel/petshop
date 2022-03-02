@@ -31,7 +31,13 @@
         <v-checkbox color="primary">
           <template v-slot:label> Remember me </template>
         </v-checkbox>
-        <v-btn class="mt-9" color="primary" block @click="login()">
+        <v-btn
+          class="mt-9"
+          color="primary"
+          block
+          @click="login()"
+          :loading="isLoading"
+        >
           LOG IN
         </v-btn>
       </v-form>
@@ -72,7 +78,6 @@ export default {
         });
 
         this.$store.commit("setLoginModalOpen", false);
-        // window.location.reload();
         this.$router.push({ name: "Customers" });
       } catch (error) {
         this.snackbar = true;
@@ -84,6 +89,7 @@ export default {
     },
   },
   data: () => ({
+    isLoading: false,
     msg: null,
     snackbar: false,
     form: {

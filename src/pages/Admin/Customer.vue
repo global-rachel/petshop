@@ -51,7 +51,7 @@
         <v-row
           transition="scroll-y-transition"
           v-if="isFilterOpen"
-          class="elevation-1 filter-container"
+          class="filter-container"
         >
           <v-col cols="12">
             <v-divider></v-divider>
@@ -237,9 +237,7 @@
       </template>
 
       <!-- No Data -->
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="getUserListingAPI()"> Reset </v-btn>
-      </template>
+      <template v-slot:no-data> No Data </template>
     </v-data-table>
   </div>
 </template>
@@ -373,10 +371,7 @@ export default {
         clearTimeout(this.timoutId);
         this.options.page = 1;
         // Will auto-search if the user is not typing for 2 secs
-        this.timoutId = setTimeout(
-          () => this.getUserListingAPI(),
-          2000
-        );
+        this.timoutId = setTimeout(() => this.getUserListingAPI(), 2000);
       },
       deep: true,
     },
@@ -396,6 +391,7 @@ export default {
       this.isLoading = false;
     },
     async sendEditUserAPI(payload) {
+      this.clickedItem = null;
       try {
         this.isModalLoading = true;
         if (this.isAddCustomer) {
@@ -484,9 +480,11 @@ $fourth-black: rgba(0, 0, 0, 0.23);
 
   .filter-container {
     background: white;
+    border-radius: 0 0 4px 4px;
     width: 100%;
     top: 100%;
     left: 0%;
+    box-shadow: 0px 3px 3px rgb(0 0 0 / 12%);
   }
 
   .avatar-text {
