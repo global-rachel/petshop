@@ -14,6 +14,7 @@ export default new Vuex.Store({
     token:  null,
     isLoginModalOpen: false,
     isSideMenuOpen: false,
+    editedUser: []
   },
   mutations: {
     setToken: (state, payload)=>{
@@ -25,6 +26,17 @@ export default new Vuex.Store({
     toggleSideMenu: (state)=>{
       state.isSideMenuOpen = !state.isSideMenuOpen
 
+    },
+    saveEditedUser: (state, payload)=>{
+      const isExisiting = state.editedUser.map(item=>item.uuid).includes(payload.uuid)
+
+      if(isExisiting)state.editedUser = state.editedUser.map(user=>{
+        if(user.uuid === payload.uuid){
+          return payload
+        }
+        else return user
+      })
+      else state.editedUser.push(payload)
     }
   },
   getters:{
@@ -53,6 +65,8 @@ export default new Vuex.Store({
       return new Promise((resolve,reject)=>{
         axios.get(`${API_HOST}${PAGE_ADMIN}/logout`).then(()=>{
           context.commit('setToken', null);
+          // Clear all vuex states
+          sessionStorage.clear();
           window.location.reload()
           resolve();
         }).catch(error=>{
@@ -61,8 +75,7 @@ export default new Vuex.Store({
         })
       })
     },
-    getAllUsersAPI: async (context,payload)=>{   
-   
+    getAllUsersAPI: async (context,payload)=>{      
       try {
         const res = await axios.get(`${API_HOST}${PAGE_ADMIN}/user-listing`,{
           headers:{
@@ -88,16 +101,9 @@ export default new Vuex.Store({
       })
 
     },
-    editUserAPI:()=>{
-      return true
-      // return new Promise((resolve,reject)=>{
-      //   axios.put(`${API_HOST}${PAGE_USER}/edit`,payload).then(()=>{
-      //     resolve();
-      //   }).catch(error=>{
-      //     console.log(error)
-      //     reject(error.response.data.error)
-      //   })
-      // })
+    editUserAPI:(context,payload)=>{
+      context.commit('saveEditedUser', payload);
+      return Promise.resolve();
 
     },
     deleteUserAPI: async (context,uuid)=>{
