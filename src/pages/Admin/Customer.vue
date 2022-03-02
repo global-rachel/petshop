@@ -388,6 +388,7 @@ export default {
       this.callAPItimes += 1;
     },
     async sendEditUserAPI(payload) {
+
       try {
         if (this.isAddCustomer) {
           await this.$store.dispatch("createUserAPI", payload);
@@ -425,10 +426,15 @@ export default {
       this.editedItem = item;
       this.isEditCustomer = true;
     },
-    deleteItem(item) {
-      this.$store.dispatch("deleteUserAPI", item.uuid);
+    async deleteItem(item) {
+      await this.$store.dispatch("deleteUserAPI", item.uuid);
       this.isShowDelete = false;
-      this.getUserListingAPI();
+
+      // After deleting, need some time to wait DB to update
+      setTimeout(() => {
+        this.getUserListingAPI();
+        this.clickedItem = false;
+      }, 2000);
     },
     resetFilter() {
       Object.keys(this.filterValue).forEach((key) => {

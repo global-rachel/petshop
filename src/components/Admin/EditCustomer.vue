@@ -163,11 +163,13 @@ export default {
     isMatchingPassword() {
       const pass = this.form.password === this.form.password_confirmation;
       if (!pass) this.valid = false;
+      else this.valid = true;
       return pass || "Passwords does not match.";
     },
     checkEmail(v) {
       const pass = !!(v || "").match(/.+@.+/);
       if (!pass) this.valid = false;
+      else this.valid = true;
       return pass || "Please enter a valid email";
     },
     checkLength: function (len) {
@@ -175,12 +177,14 @@ export default {
       return function (v) {
         const pass = (v || "").length >= len;
         if (!pass) _this.valid = false;
+        else _this.valid = true;
         return pass || `Invalid length, required at least ${len}`;
       };
     },
     checkRequired(v) {
       const pass = !!(v || "");
       if (!pass) this.valid = false;
+      else this.valid = true;
       return pass || "This field is required";
     },
   },

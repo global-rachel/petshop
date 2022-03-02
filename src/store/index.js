@@ -100,19 +100,21 @@ export default new Vuex.Store({
       // })
 
     },
-    deleteUserAPI:(context,uuid)=>{
-      return new Promise((resolve,reject)=>{
-        axios.delete(`${API_HOST}${PAGE_ADMIN}/user-delete/${uuid}`,{
+    deleteUserAPI: async (context,uuid)=>{
+
+      try {
+        const res = await axios.delete(`${API_HOST}${PAGE_ADMIN}/user-delete/${uuid}`,{
           headers:{
             Authorization: `${context.state.token}`
           }
-        }).then(()=>{
-          resolve();
-        }).catch(error=>{
-          console.log(error)
-          reject(error.response.data.error)
         })
-      })
+        return res
+        
+      } catch(error){
+        console.log(error)
+      }
+      
+      
 
     }
 
